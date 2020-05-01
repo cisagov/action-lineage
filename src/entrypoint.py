@@ -62,23 +62,29 @@ def main() -> int:
 
     # sanity checks
     if access_token is None:
-        logging.fatal("Access token must be set. (INPUT_ACCESS-TOKEN)")
+        logging.fatal(
+            "Access token environment variable must be set. (INPUT_ACCESS-TOKEN)"
+        )
         return -1
 
     if build_age is None:
-        logging.fatal("Build age must be set. (INPUT_BUILD-AGE)")
+        logging.fatal("Build age environment variable must be set. (INPUT_BUILD-AGE)")
         return -1
 
     if event_type is None:
-        logging.fatal("Event type must be set. (INPUT_EVENT-TYPE)")
+        logging.fatal("Event type environment variable must be set. (INPUT_EVENT-TYPE)")
         return -1
 
     if repo_query is None:
-        logging.fatal("Reository query must be set. (INPUT_REPO-QUERY)")
+        logging.fatal(
+            "Reository query environment variable must be set. (INPUT_REPO-QUERY)"
+        )
         return -1
 
     if workflow_id is None:
-        logging.fatal("Workflow ID must be set. (INPUT_WORKFLOW-ID)")
+        logging.fatal(
+            "Workflow ID environment variable must be set. (INPUT_WORKFLOW-ID)"
+        )
         return -1
 
     # setup time calculations
