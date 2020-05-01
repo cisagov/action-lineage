@@ -50,7 +50,7 @@ def get_last_run(
 def main() -> int:
     """Parse evironment and perform requested actions."""
     # Set up logging
-    logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level="INFO")
+    logging.basicConfig(format="%(levelname)s %(message)s", level="INFO")
 
     # Get inputs from the environment
     access_token: Optional[str] = os.environ.get("INPUT_ACCESS_TOKEN")
