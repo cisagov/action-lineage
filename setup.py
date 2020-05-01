@@ -1,5 +1,5 @@
 """
-This is the setup module for the example project.
+This is the setup module for the action-apb project.
 
 Based on:
 
@@ -31,10 +31,10 @@ def package_vars(version_file):
 
 
 setup(
-    name="example",
+    name="All Projects Builder Action",
     # Versions should comply with PEP440
-    version=package_vars("src/example/_version.py")["__version__"],
-    description="Example python library",
+    version=package_vars("src/_version.py")["__version__"],
+    description="GitHub Action to rebuild respositories that haven't be built in a while.",
     long_description=readme(),
     long_description_content_type="text/markdown",
     # NCATS "homepage"
@@ -65,13 +65,13 @@ setup(
     ],
     python_requires=">=3.6",
     # What does your project relate to?
-    keywords="skeleton",
+    keywords="apb",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     package_data={"example": ["data/*.txt"]},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
-    install_requires=["docopt", "setuptools >= 24.2.0", "schema"],
+    install_requires=["PyGithub", "pytimeparse", "setuptools >= 24.2.0"],
     extras_require={
         "test": [
             "pre-commit",
@@ -88,5 +88,5 @@ setup(
         ]
     },
     # Conveniently allows one to run the CLI tool as `example`
-    entry_points={"console_scripts": ["example = example.example:main"]},
+    entry_points={"console_scripts": ["apb = entrypoint:main"]},
 )
