@@ -1,0 +1,37 @@
+---
+author: "Cyber and Infrastructure Security Agency"
+branding:
+  icon: "clock"
+  color: "purple"
+description: "Sends rebuild events to any projects that haven't been built
+              recently."
+name: "All Projects Builder"
+
+inputs:
+  repo-query:
+    description: "GitHub search query used to find repositories for rebuild.
+      See: https://developer.github.com/v3/search/#constructing-a-search-query"
+    required: true
+  access-token:
+    description: "GitHub personal access token."
+    required: true
+  workflow-id:
+    description: "The workflow to monitor."
+    required: false
+    default: "build.yml"
+  build-age:
+    description: "Repository build age to trigger rebuilds."
+    required: false
+    default: "7d"
+  event-type:
+    description: "repository_dispatch event type to send."
+    required: false
+    default: "apb"
+  max-rebuilds:
+    description: "Limit the number of rebuilds that will be triggered."
+    required: false
+    default: 10
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
