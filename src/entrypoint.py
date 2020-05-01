@@ -53,32 +53,32 @@ def main() -> int:
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level="INFO")
 
     # Get inputs from the environment
-    access_token: Optional[str] = os.environ.get("INPUT_ACCESS_TOKEN")
-    build_age: Optional[str] = os.environ.get("INPUT_BUILD_AGE")
-    event_type: Optional[str] = os.environ.get("INPUT_EVENT_TYPE")
-    repo_query: Optional[str] = os.environ.get("INPUT_REPO_QUERY")
-    workflow_id: Optional[str] = os.environ.get("INPUT_WORKFLOW_ID")
+    access_token: Optional[str] = os.environ.get("INPUT_ACCESS-TOKEN")
+    build_age: Optional[str] = os.environ.get("INPUT_BUILD-AGE")
+    event_type: Optional[str] = os.environ.get("INPUT_EVENT-TYPE")
+    repo_query: Optional[str] = os.environ.get("INPUT_REPO-QUERY")
+    workflow_id: Optional[str] = os.environ.get("INPUT_WORKFLOW-ID")
     max_rebuilds: int = int(os.environ.get("INPUT_MAX_REBUILDS", 10))
 
     # sanity checks
     if access_token is None:
-        logging.fatal("Access token must be set. (INPUT_ACCESS_TOKEN)")
+        logging.fatal("Access token must be set. (INPUT_ACCESS-TOKEN)")
         return -1
 
     if build_age is None:
-        logging.fatal("Build age must be set. (INPUT_BUILD_AGE)")
+        logging.fatal("Build age must be set. (INPUT_BUILD-AGE)")
         return -1
 
     if event_type is None:
-        logging.fatal("Event type must be set. (INPUT_EVENT_TYPE)")
+        logging.fatal("Event type must be set. (INPUT_EVENT-TYPE)")
         return -1
 
     if repo_query is None:
-        logging.fatal("Reository query must be set. (INPUT_REPO_QUERY)")
+        logging.fatal("Reository query must be set. (INPUT_REPO-QUERY)")
         return -1
 
     if workflow_id is None:
-        logging.fatal("Workflow ID must be set. (INPUT_WORKFLOW_ID)")
+        logging.fatal("Workflow ID must be set. (INPUT_WORKFLOW-ID)")
         return -1
 
     # setup time calculations
