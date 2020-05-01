@@ -53,37 +53,37 @@ def main() -> int:
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level="INFO")
 
     # Get inputs from the environment
-    access_token: Optional[str] = os.environ.get("INPUT_ACCESS-TOKEN")
-    build_age: Optional[str] = os.environ.get("INPUT_BUILD-AGE")
-    event_type: Optional[str] = os.environ.get("INPUT_EVENT-TYPE")
-    repo_query: Optional[str] = os.environ.get("INPUT_REPO-QUERY")
-    workflow_id: Optional[str] = os.environ.get("INPUT_WORKFLOW-ID")
+    access_token: Optional[str] = os.environ.get("INPUT_ACCESS_TOKEN")
+    build_age: Optional[str] = os.environ.get("INPUT_BUILD_AGE")
+    event_type: Optional[str] = os.environ.get("INPUT_EVENT_TYPE")
+    repo_query: Optional[str] = os.environ.get("INPUT_REPO_QUERY")
+    workflow_id: Optional[str] = os.environ.get("INPUT_WORKFLOW_ID")
     max_rebuilds: int = int(os.environ.get("INPUT_MAX_REBUILDS", 10))
 
     # sanity checks
     if access_token is None:
         logging.fatal(
-            "Access token environment variable must be set. (INPUT_ACCESS-TOKEN)"
+            "Access token environment variable must be set. (INPUT_ACCESS_TOKEN)"
         )
         return -1
 
     if build_age is None:
-        logging.fatal("Build age environment variable must be set. (INPUT_BUILD-AGE)")
+        logging.fatal("Build age environment variable must be set. (INPUT_BUILD_AGE)")
         return -1
 
     if event_type is None:
-        logging.fatal("Event type environment variable must be set. (INPUT_EVENT-TYPE)")
+        logging.fatal("Event type environment variable must be set. (INPUT_EVENT_TYPE)")
         return -1
 
     if repo_query is None:
         logging.fatal(
-            "Reository query environment variable must be set. (INPUT_REPO-QUERY)"
+            "Reository query environment variable must be set. (INPUT_REPO_QUERY)"
         )
         return -1
 
     if workflow_id is None:
         logging.fatal(
-            "Workflow ID environment variable must be set. (INPUT_WORKFLOW-ID)"
+            "Workflow ID environment variable must be set. (INPUT_WORKFLOW_ID)"
         )
         return -1
 
@@ -111,13 +111,14 @@ def main() -> int:
             continue
         if last_run < past_date:
             logging.info(f"{repo.full_name} needs a rebuild: {now - last_run}")
-            rebuilds_triggered += 1
-            repo.create_repository_dispatch(event_type)
-            if max_rebuilds > 0 and rebuilds_triggered == max_rebuilds:
-                logging.warning(
-                    "Max rebuilds limit reached.  Preventing additional triggers."
+            if max_rebuilds == 0 or rebuilds_triggered < max_rebuilds:
+                rebuilds_triggered += 1
+                repo.create_repository_dispatch(event_type)
+                logging.info(
+                    f"Sent {event_type} event #{rebuilds_triggered} to {repo.full_name}."
                 )
-                break
+                if rebuilds_triggered == max_rebuilds:
+                    logging.warning("Max rebuild events sent.")
         else:
             logging.info(f"{repo.full_name} is OK: {now - last_run}")
     return 0

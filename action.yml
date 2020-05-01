@@ -12,22 +12,22 @@ inputs:
     description: "GitHub search query used to find repositories for rebuild.
       See: https://developer.github.com/v3/search/#constructing-a-search-query"
     required: true
-  access-token:
+  access_token:
     description: "GitHub personal access token."
     required: true
-  workflow-id:
+  workflow_id:
     description: "The workflow to monitor."
     required: false
     default: "build.yml"
-  build-age:
+  build_age:
     description: "Repository build age to trigger rebuilds."
     required: false
     default: "7d"
-  event-type:
+  event_type:
     description: "repository_dispatch event type to send."
     required: false
     default: "apb"
-  max-rebuilds:
+  max_rebuilds:
     description: "Limit the number of rebuilds that will be triggered."
     required: false
     default: 10
