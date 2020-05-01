@@ -71,7 +71,12 @@ setup(
     package_data={"example": ["data/*.txt"]},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
-    install_requires=["PyGithub", "pytimeparse", "setuptools >= 24.2.0"],
+    install_requires=[
+        "python-dateutil",
+        "PyGithub",
+        "pytimeparse",
+        "setuptools >= 24.2.0",
+    ],
     extras_require={
         "test": [
             "pre-commit",
