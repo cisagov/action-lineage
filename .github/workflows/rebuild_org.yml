@@ -1,0 +1,22 @@
+---
+name: rebuild_org
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+env:
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+jobs:
+  dispatch_rebuilds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cisagov/action-apb@develop
+        with:
+          access-token: ${{ env.ACCESS_TOKEN }}
+          build-age: "2m"
+          event-type: "apb"
+          max-rebuilds: 10
+          repo-query: "org:cisagov archived:false cool-system"
+          workflow-id: "build.yml"
