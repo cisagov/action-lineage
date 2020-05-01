@@ -108,6 +108,7 @@ def main() -> int:
     for repo in repos:
         last_run = get_last_run(session, repo, workflow_id)
         if last_run is None:
+            logging.info(f"{repo.full_name} does not have workflow {workflow_id}")
             continue
         if last_run < past_date:
             logging.info(f"{repo.full_name} needs a rebuild: {now - last_run}")
