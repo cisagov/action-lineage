@@ -23,12 +23,20 @@ jobs:
           max_rebuilds: 10
           repo_query: "org:cisagov archived:false"
           workflow_id: "build.yml"
-      - name: Setup tmate debug session
-        uses: mxschmitt/action-tmate@v2
-        if: github.event_name == 'repository_dispatch' &&
-            github.event.action == 'run_tmate'
-      - name: Upload artifacts
+      - name: Save apb output as an artifact
         uses: actions/upload-artifact@v2
         with:
           name: output.json
           path: output.json
+      - name: Update wiki
+        uses: actions/checkout@v2
+        with:
+          repository: "${{ github.repository }}.wiki"
+          token: ${{ env.ACCESS_TOKEN }}
+      - name: Setup tmate debug session
+        uses: mxschmitt/action-tmate@v2
+        if: github.event_name == 'repository_dispatch' &&
+            github.event.action == 'run_tmate'
+        # uses: cisagov/action-badgeboard
+        # with:
+        #   page: actions
