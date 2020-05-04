@@ -116,15 +116,15 @@ def main() -> int:
     rebuilds_triggered: int = 0
     # Gather status for output at end of run
     all_repo_status: dict = {
-        "build_age": build_age,
         "build_age_seconds": build_age_seconds,
-        "repo_query": repo_query,
-        "start_time": now.isoformat(),
-        "repos": dict(),
+        "build_age": build_age,
+        "ran_at": now.isoformat(),
+        "repositories": dict(),
+        "repository_query": repo_query,
     }
     for repo in repos:
         repo_status: dict = dict()
-        all_repo_status["repos"][repo.full_name] = repo_status
+        all_repo_status["repositories"][repo.full_name] = repo_status
         last_run = get_last_run(session, repo, workflow_id)
         if last_run is None:
             # repo does not have the workflow configured
@@ -154,7 +154,7 @@ def main() -> int:
     status_file: Path = Path(github_workspace_dir) / Path("output.json")
     logging.info(f"Writing status file to {status_file}")
     with status_file.open("w") as f:
-        json.dump(all_repo_status, f, indent=4)
+        json.dump(all_repo_status, f, indent=4, sort_keys=True)
     logging.info("Completed.")
     return 0
 
