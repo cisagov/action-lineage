@@ -15,6 +15,8 @@ jobs:
   dispatch_rebuilds:
     runs-on: ubuntu-latest
     steps:
+      - name: debug_info
+        uses: hmarr/debug-action@v1
       - name: check_org_repos
         uses: cisagov/action-apb@develop
         with:
