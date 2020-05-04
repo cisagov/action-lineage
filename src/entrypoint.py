@@ -3,8 +3,10 @@
 
 # Standard Python Libraries
 from datetime import datetime
+import json
 import logging
 import os
+from pathlib import Path
 import sys
 from typing import Generator, Optional
 
@@ -56,9 +58,10 @@ def main() -> int:
     access_token: Optional[str] = os.environ.get("INPUT_ACCESS_TOKEN")
     build_age: Optional[str] = os.environ.get("INPUT_BUILD_AGE")
     event_type: Optional[str] = os.environ.get("INPUT_EVENT_TYPE")
+    github_workspace_dir: Optional[str] = os.environ.get("GITHUB_WORKSPACE")
+    max_rebuilds: int = int(os.environ.get("INPUT_MAX_REBUILDS", 10))
     repo_query: Optional[str] = os.environ.get("INPUT_REPO_QUERY")
     workflow_id: Optional[str] = os.environ.get("INPUT_WORKFLOW_ID")
-    max_rebuilds: int = int(os.environ.get("INPUT_MAX_REBUILDS", 10))
 
     # sanity checks
     if access_token is None:
@@ -73,6 +76,12 @@ def main() -> int:
 
     if event_type is None:
         logging.fatal("Event type environment variable must be set. (INPUT_EVENT_TYPE)")
+        return -1
+
+    if github_workspace_dir is None:
+        logging.fatal(
+            "GitHub workspace environment variable must be set. (GITHUB_WORKSPACE)"
+        )
         return -1
 
     if repo_query is None:
@@ -104,24 +113,49 @@ def main() -> int:
 
     repos = get_repo_list(g, repo_query)
 
-    rebuilds_triggered = 0
+    rebuilds_triggered: int = 0
+    # Gather status for output at end of run
+    all_repo_status: dict = {
+        "build_age": build_age,
+        "build_age_seconds": build_age_seconds,
+        "repo_query": repo_query,
+        "start_time": now.isoformat(),
+        "repos": dict(),
+    }
     for repo in repos:
+        repo_status: dict = dict()
+        all_repo_status["repos"][repo.full_name] = repo_status
         last_run = get_last_run(session, repo, workflow_id)
         if last_run is None:
+            # repo does not have the workflow configured
             logging.info(f"{repo.full_name} does not have workflow {workflow_id}")
+            repo_status["workflow"] = None
             continue
+        # repo has the workflow we're looking for
+        repo_status["workflow"] = workflow_id
+        repo_status["run_age"] = int((now - last_run).total_seconds())
         if last_run < past_date:
             logging.info(f"{repo.full_name} needs a rebuild: {now - last_run}")
             if max_rebuilds == 0 or rebuilds_triggered < max_rebuilds:
                 rebuilds_triggered += 1
                 repo.create_repository_dispatch(event_type)
+                repo_status["event_sent"] = True
                 logging.info(
                     f"Sent {event_type} event #{rebuilds_triggered} to {repo.full_name}."
                 )
                 if rebuilds_triggered == max_rebuilds:
+                    repo_status["event_sent"] = False
                     logging.warning("Max rebuild events sent.")
         else:
             logging.info(f"{repo.full_name} is OK: {now - last_run}")
+            repo_status["event_sent"] = False
+
+    # Write json state to an output file
+    status_file: Path = Path(github_workspace_dir) / Path("output.json")
+    logging.info(f"Writing status file to {status_file}")
+    with status_file.open("w") as f:
+        json.dump(all_repo_status, f)
+    logging.info("Completed.")
     return 0
 
 
