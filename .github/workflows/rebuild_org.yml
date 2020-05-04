@@ -9,7 +9,6 @@ on:
 
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-  RUN_TMATE: ${{ secrets.RUN_TMATE }}
 
 jobs:
   dispatch_rebuilds:
