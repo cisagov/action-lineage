@@ -27,3 +27,8 @@ jobs:
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v2
         if: env.RUN_TMATE
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: output.json
+          path: output.json
