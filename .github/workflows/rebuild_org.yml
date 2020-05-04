@@ -3,13 +3,12 @@ name: rebuild_org
 
 on:
   repository_dispatch:
-    types: [run_tmate]
+    types: [run_tmate, run]
   schedule:
     - cron: "0 * * * *"
 
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-  GITHUB_CONTEXT: ${{ toJson(github) }}
   RUN_TMATE: ${{ secrets.RUN_TMATE }}
 
 jobs:
