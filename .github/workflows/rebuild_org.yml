@@ -25,5 +25,5 @@ jobs:
           repo_query: "org:cisagov archived:false"
           workflow_id: "build.yml"
       - name: Setup tmate debug session
-        uses: mxschmitt/action-tmate@v1
+        uses: mxschmitt/action-tmate@v2
         if: env.RUN_TMATE
