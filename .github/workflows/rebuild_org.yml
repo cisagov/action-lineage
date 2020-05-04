@@ -27,7 +27,8 @@ jobs:
           workflow_id: "build.yml"
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v2
-        if: github.action == 'run_tmate'
+        if: github.event_name == 'repository_dispatch' &&
+            github.event.action == 'run_tmate'
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
