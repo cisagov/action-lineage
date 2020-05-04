@@ -154,7 +154,7 @@ def main() -> int:
     status_file: Path = Path(github_workspace_dir) / Path("output.json")
     logging.info(f"Writing status file to {status_file}")
     with status_file.open("w") as f:
-        json.dump(all_repo_status, f)
+        json.dump(all_repo_status, f, indent=4)
     logging.info("Completed.")
     return 0
 
