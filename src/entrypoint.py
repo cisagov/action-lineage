@@ -146,7 +146,7 @@ def main() -> int:
         repo_status["run_age"] = format_timedelta(delta)
         repo_status["event_sent"] = False
         if last_run < past_date:
-            logging.info(f"{repo.full_name} needs a rebuild: {now - last_run}")
+            logging.info(f"{repo.full_name} needs a rebuild: {format_timedelta(delta)}")
             if max_rebuilds == 0 or rebuilds_triggered < max_rebuilds:
                 rebuilds_triggered += 1
                 repo.create_repository_dispatch(event_type)
@@ -157,7 +157,7 @@ def main() -> int:
                 if rebuilds_triggered == max_rebuilds:
                     logging.warning("Max rebuild events sent.")
         else:
-            logging.info(f"{repo.full_name} is OK: {now - last_run}")
+            logging.info(f"{repo.full_name} is OK: {format_timedelta(delta)}")
 
     # Write json state to an output file
     status_file: Path = Path(github_workspace_dir) / Path(write_filename)
