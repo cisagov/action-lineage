@@ -33,6 +33,7 @@ jobs:
       - name: Update wiki
         uses: actions/checkout@v2
         with:
+          path: wiki
           repository: "${{ github.repository }}.wiki"
           token: ${{ env.ACCESS_TOKEN }}
       # git remote set-url origin
