@@ -8,17 +8,9 @@ description: "Sends rebuild events to any projects that haven't been built
 name: "All Projects Builder"
 
 inputs:
-  repo-query:
-    description: "GitHub search query used to find repositories for rebuild.
-      See: https://developer.github.com/v3/search/#constructing-a-search-query"
-    required: true
   access_token:
     description: "GitHub personal access token."
     required: true
-  workflow_id:
-    description: "The workflow to monitor."
-    required: false
-    default: "build.yml"
   build_age:
     description: "Repository build age to trigger rebuilds."
     required: false
@@ -31,7 +23,18 @@ inputs:
     description: "Limit the number of rebuilds that will be triggered."
     required: false
     default: 10
-
+  repo-query:
+    description: "GitHub search query used to find repositories for rebuild.
+      See: https://developer.github.com/v3/search/#constructing-a-search-query"
+    required: true
+  workflow_id:
+    description: "The workflow to monitor."
+    required: false
+    default: "build.yml"
+  write-filename:
+    description: "The output file in which to write the state json."
+    required: false
+    default: "apb.json"
 runs:
   using: "docker"
   image: "Dockerfile"

@@ -11,6 +11,7 @@ import sys
 from typing import Generator, Optional
 
 # Third-Party Libraries
+from babel.dates import format_timedelta
 from dateutil.parser import isoparse
 from dateutil.relativedelta import relativedelta
 from github import Github, Repository
@@ -62,6 +63,7 @@ def main() -> int:
     max_rebuilds: int = int(os.environ.get("INPUT_MAX_REBUILDS", 10))
     repo_query: Optional[str] = os.environ.get("INPUT_REPO_QUERY")
     workflow_id: Optional[str] = os.environ.get("INPUT_WORKFLOW_ID")
+    write_filename: Optional[str] = os.environ.get("INPUT_WRITE_FILENAME", "apb.json")
 
     # sanity checks
     if access_token is None:
@@ -93,6 +95,12 @@ def main() -> int:
     if workflow_id is None:
         logging.fatal(
             "Workflow ID environment variable must be set. (INPUT_WORKFLOW_ID)"
+        )
+        return -1
+
+    if write_filename is None:
+        logging.fatal(
+            "Output filename environment variable must be set. (INPUT_WRITE_FILENAME)"
         )
         return -1
 
@@ -133,7 +141,10 @@ def main() -> int:
             continue
         # repo has the workflow we're looking for
         repo_status["workflow"] = workflow_id
-        repo_status["run_age"] = int((now - last_run).total_seconds())
+        delta = now - last_run
+        repo_status["run_age_seconds"] = int(delta.total_seconds())
+        repo_status["run_age"] = format_timedelta(delta)
+        repo_status["event_sent"] = False
         if last_run < past_date:
             logging.info(f"{repo.full_name} needs a rebuild: {now - last_run}")
             if max_rebuilds == 0 or rebuilds_triggered < max_rebuilds:
@@ -144,14 +155,12 @@ def main() -> int:
                     f"Sent {event_type} event #{rebuilds_triggered} to {repo.full_name}."
                 )
                 if rebuilds_triggered == max_rebuilds:
-                    repo_status["event_sent"] = False
                     logging.warning("Max rebuild events sent.")
         else:
             logging.info(f"{repo.full_name} is OK: {now - last_run}")
-            repo_status["event_sent"] = False
 
     # Write json state to an output file
-    status_file: Path = Path(github_workspace_dir) / Path("output.json")
+    status_file: Path = Path(github_workspace_dir) / Path(write_filename)
     logging.info(f"Writing status file to {status_file}")
     with status_file.open("w") as f:
         json.dump(all_repo_status, f, indent=4, sort_keys=True)

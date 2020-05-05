@@ -26,13 +26,20 @@ jobs:
       - name: Save apb output as an artifact
         uses: actions/upload-artifact@v2
         with:
-          name: output.json
-          path: output.json
+          name: apb.json
+          path: apb.json
+      - name: Generate markdown
+        uses: cisagov/action-apb-dashboard@develop
       - name: Update wiki
         uses: actions/checkout@v2
         with:
           repository: "${{ github.repository }}.wiki"
           token: ${{ env.ACCESS_TOKEN }}
+      # git remote set-url origin
+      # https://$GITHUB_ACTOR:$ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY.wiki.git
+      # git config --global user.name $GITHUB_ACTOR
+      # git commit -m bang
+      # git push
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v2
         if: github.event_name == 'repository_dispatch' &&

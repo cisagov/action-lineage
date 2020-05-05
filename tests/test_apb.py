@@ -1,5 +1,5 @@
 #!/usr/bin/env pytest -vs
-"""Tests for abp action."""
+"""Tests for apb action."""
 
 # Standard Python Libraries
 import os
