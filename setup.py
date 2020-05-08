@@ -1,5 +1,5 @@
 """
-This is the setup module for the action-apb project.
+This is the setup module for the action-lineage project.
 
 Based on:
 
@@ -31,16 +31,16 @@ def package_vars(version_file):
 
 
 setup(
-    name="All Projects Builder Action",
+    name="Lineage Action",
     # Versions should comply with PEP440
-    version=package_vars("src/_version.py")["__version__"],
+    version=package_vars("src/lineage/_version.py")["__version__"],
     description="GitHub Action to rebuild respositories that haven't be built in a while.",
     long_description=readme(),
     long_description_content_type="text/markdown",
     # NCATS "homepage"
     url="https://www.us-cert.gov/resources/ncats",
     # The project's main homepage
-    download_url="https://github.com/cisagov/action-apb",
+    download_url="https://github.com/cisagov/action-lineage",
     # Author details
     author="Cyber and Infrastructure Security Agency",
     author_email="ncats@hq.dhs.gov",
@@ -65,19 +65,13 @@ setup(
     ],
     python_requires=">=3.6",
     # What does your project relate to?
-    keywords="apb",
+    keywords="lineage,upstream,pull",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    package_data={"example": ["data/*.txt"]},
+    package_data={"lineage": ["templates/*.md"]},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
-    install_requires=[
-        "Babel",
-        "python-dateutil",
-        "PyGithub",
-        "pytimeparse",
-        "setuptools >= 24.2.0",
-    ],
+    install_requires=["pystache", "PyGithub", "setuptools >= 24.2.0", "PyYAML"],
     extras_require={
         "test": [
             "pre-commit",
@@ -94,5 +88,5 @@ setup(
         ]
     },
     # Conveniently allows one to run the CLI tool as `example`
-    entry_points={"console_scripts": ["apb = entrypoint:main"]},
+    entry_points={"console_scripts": ["lineage = lineage.entrypoint:main"]},
 )
