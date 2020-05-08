@@ -1,5 +1,7 @@
 # Lineage Pull Request: CONFLICT
 
+![DANGER](https://raw.githubusercontent.com/cisagov/action-lineage/develop/src/achtung.gif)
+
 This pull request contains changes from the upstream repository:
 
 URL: `{{ remote_url }}`
