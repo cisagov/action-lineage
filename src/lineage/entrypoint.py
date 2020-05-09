@@ -32,7 +32,7 @@ def run(
     """Run a command and display its output and return code."""
     if comment:
         logging.info(f"💬 {comment}")
-    logging.info(f"➤  {cmd}")
+    logging.debug(f"➤  {cmd}")
     proc = subprocess.run(
         cmd,
         shell=False,  # nosec
@@ -40,12 +40,14 @@ def run(
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    logging.info(proc.stdout.decode())
     if proc.returncode == 0:
+        logging.debug(proc.stdout.decode())
         logging.info("✅ success")
     elif error_ok:
+        logging.debug(proc.stdout.decode())
         logging.info(f"✅ (error ok) return code: {proc.returncode}")
     else:
+        logging.warning(proc.stdout.decode())
         logging.warning(f"❌ ERROR! return code: {proc.returncode}")
     return proc
 
@@ -72,7 +74,7 @@ def get_repo_list(
     g: Github, repo_query: str
 ) -> Generator[Repository.Repository, None, None]:
     """Generate a list of repositories based on the query."""
-    print(f"Querying for repositories: {repo_query}")
+    logging.info(f"Querying for repositories: {repo_query}")
     matching_repos = g.search_repositories(query=repo_query)
     for repo in matching_repos:
         yield repo
@@ -98,7 +100,9 @@ def switch_branch(repo, lineage_id, local_branch) -> Tuple[str, bool]:
         logging.info(
             f"Branch did not exist.  Creating: {branch_name} from local {local_branch}"
         )
+        logging.info(f"Creating branch {branch_name} from {local_branch}")
         run([GIT, "branch", branch_name, local_branch], cwd=repo.full_name)
+        logging.info(f"Switching to {branch_name}")
         run([GIT, "switch", branch_name], cwd=repo.full_name)
         return branch_name, True  # branch is new
     else:
@@ -107,20 +111,26 @@ def switch_branch(repo, lineage_id, local_branch) -> Tuple[str, bool]:
 
 def fetch(repo, remote_url, remote_branch):
     """Fetch commits from remote branch."""
+    logging.info(f"Fetching {remote_url} {remote_branch}")
     run([GIT, "fetch", remote_url, remote_branch], cwd=repo.full_name)
 
 
 def merge(repo) -> Tuple[bool, Optional[str]]:
     """Merge previously fetched commits."""
     conflict_diff: Optional[str] = None
+    logging.info(f"Attempting merge of fetched changes.")
     proc = run([GIT, "merge", "--no-commit", "FETCH_HEAD"], cwd=repo.full_name)
     if ALREADY_UP_TO_DATE in proc.stdout.decode():
+        logging.info("Branch is already up to date.")
         return False, conflict_diff
     conflict: bool = proc.returncode != 0
     if conflict:
+        logging.info("Conflict detected during merge.  Collecting conflicted files.")
         proc = run([GIT, "diff", "--name-only", "--diff-filter=U"], cwd=repo.full_name)
         conflict_diff = proc.stdout.decode()
+        logging.info("Adding conflicts into branch for later resolution.")
         run([GIT, "add", "."], cwd=repo.full_name)
+    logging.info("Committing merge.")
     run([GIT, "commit", "--file=.git/MERGE_MSG"], cwd=repo.full_name)
     return True, conflict_diff
 
@@ -129,12 +139,15 @@ def push(repo, branch_name, username, password):
     """Push changes to remote."""
     parts: ParseResult = urlparse(repo.clone_url)
     cred_url = parts._replace(netloc=f"{username}:{password}@{parts.netloc}").geturl()
+    logging.info("Assigning credentials for push.")
     run([GIT, "remote", "set-url", "origin", cred_url], cwd=repo.full_name)
+    logging.info(f"Pushing {branch_name} to remote.")
     run([GIT, "push", "--set-upstream", "origin", branch_name], cwd=repo.full_name)
 
 
 def create_pull_request(repo, pr_branch_name, local_branch, title, body, draft):
     """Create a pull request."""
+    logging.info(f"Creating a new pull request in {repo.full_name}")
     repo.create_pull(
         title=title, head=pr_branch_name, base=local_branch, body=body, draft=draft
     )
@@ -187,6 +200,7 @@ def main() -> int:
     repos = get_repo_list(g, repo_query)
     for repo in repos:
         logging.info(f"Checking: {repo.full_name}")
+        logging.info(f"Cloning repository: {repo.clone_url}")
         run([GIT, "clone", repo.clone_url, repo.full_name])
         config = get_config(repo)
         if not config:
