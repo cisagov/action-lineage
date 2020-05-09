@@ -2,15 +2,15 @@
 
 ![DANGER](https://raw.githubusercontent.com/cisagov/action-lineage/develop/src/achtung.gif)
 
-This pull request contains changes from the upstream repository:
+This pull request contains changes from an upstream repository:
 
-URL: `{{ remote_url }}`
+Upstream repository: [`{{ remote_url }}`]({{ remote_url }})
 Remote branch: `{{ remote_branch }}`
 
-The {{ pr_branch_name }} branch has **one or more unresolved merge conflicts** that
-you must resolve before merging this pull request!
+The `{{ pr_branch_name }}` branch has **one or more unresolved merge conflicts**
+that you must resolve before merging this pull request!
 
-## Conflicts
+## Files with conflicts
 
 ```diff
 {{ conflict_diff }}
