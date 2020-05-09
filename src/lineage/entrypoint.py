@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess  # nosec
 import sys
 from typing import Generator, List, Optional, Tuple
+from urllib.parse import ParseResult, urlparse
 
 # Third-Party Libraries
 from github import Github, Repository
@@ -117,21 +118,26 @@ def merge(repo) -> Tuple[bool, Optional[str]]:
         return False, conflict_diff
     conflict: bool = proc.returncode != 0
     if conflict:
-        proc = run([GIT, "diff"], cwd=repo.full_name)
+        proc = run([GIT, "diff", "--name-only", "--diff-filter=U"], cwd=repo.full_name)
         conflict_diff = proc.stdout.decode()
         run([GIT, "add", "."], cwd=repo.full_name)
     run([GIT, "commit", "--file=.git/MERGE_MSG"], cwd=repo.full_name)
     return True, conflict_diff
 
 
-def push(repo, branch_name):
+def push(repo, branch_name, username, password):
     """Push changes to remote."""
+    parts: ParseResult = urlparse(repo.clone_url)
+    cred_url = parts._replace(netloc=f"{username}:{password}@{parts.netloc}").geturl()
+    run([GIT, "remote", "set-url", "origin", cred_url], cwd=repo.full_name)
     run([GIT, "push", "--set-upstream", "origin", branch_name], cwd=repo.full_name)
 
 
-def create_pull_request(repo, pr_branch_name, local_branch, title, body):
+def create_pull_request(repo, pr_branch_name, local_branch, title, body, draft):
     """Create a pull request."""
-    repo.create_pull(title=title, head=pr_branch_name, base=local_branch, body=body)
+    repo.create_pull(
+        title=title, head=pr_branch_name, base=local_branch, body=body, draft=draft
+    )
 
 
 def main() -> int:
@@ -213,7 +219,7 @@ def main() -> int:
                     f"Already up to date with: {remote_url} {remote_branch or ''} "
                 )
                 continue
-            push(repo, pr_branch_name)
+            push(repo, pr_branch_name, "git", access_token)
 
             if branch_is_new:
                 logging.info("Creating a new pull request since branch is new.")
@@ -224,12 +230,17 @@ def main() -> int:
                     "remote_url": remote_url,
                 }
                 if conflict_diff:
-                    title = f"Lineage auto pull request for {lineage_id}: CONFLICT!"
+                    title = f"⚠️ CONFLICT! Lineage pull request for: {lineage_id}"
                     body = pystache.render(conflict_template, template_data)
+                    create_pull_request(
+                        repo, pr_branch_name, local_branch, title, body, draft=True
+                    )
                 else:
-                    title = f"Lineage auto pull request for {lineage_id}"
+                    title = f"Lineage pull request for: {lineage_id}"
                     body = pystache.render(clean_template, template_data)
-                create_pull_request(repo, pr_branch_name, local_branch, title, body)
+                    create_pull_request(
+                        repo, pr_branch_name, local_branch, title, body, draft=False
+                    )
             else:
                 logging.info(
                     "Not creating a new pull request since the branch already existed."
