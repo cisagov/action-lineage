@@ -18,4 +18,4 @@ LABEL org.opencontainers.image.version=${VERSION}
 
 COPY . ./
 RUN pip install -r requirements.txt
-ENTRYPOINT ["/src/entrypoint.py"]
+ENTRYPOINT ["/src/lineage/entrypoint.py"]
