@@ -1,5 +1,5 @@
 #!/usr/bin/env pytest -vs
-"""Tests for apb action."""
+"""Tests for lineage action."""
 
 # Standard Python Libraries
 import os
@@ -8,10 +8,10 @@ import os
 import pytest
 
 # cisagov Libraries
-import _version
+import lineage
 
 # define sources of version strings
-PROJECT_VERSION = _version.__version__
+PROJECT_VERSION = lineage.__version__
 RELEASE_TAG = os.getenv("RELEASE_TAG")
 
 
