@@ -10,7 +10,7 @@ inputs:
   access_token:
     description: "GitHub personal access token."
     required: true
-  repo-query:
+  repo_query:
     description: "GitHub search query to find repositories for pull requests."
     required: true
 runs:
