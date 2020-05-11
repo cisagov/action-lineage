@@ -3,7 +3,7 @@ name: lineage_scan
 
 on:
   schedule:
-    - cron: "0/5 * * * *"
+    - cron: "*/5 * * * *"
 
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
