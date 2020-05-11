@@ -1,0 +1,19 @@
+---
+name: lineage_scan
+
+on:
+  schedule:
+    - cron: "0/5 * * * *"
+
+env:
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+jobs:
+  cisagov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all organization repositories
+        uses: cisagov/action-lineage@develop
+        with:
+          access_token: ${{ env.ACCESS_TOKEN }}
+          repo_query: "org:cisagov archived:false"
