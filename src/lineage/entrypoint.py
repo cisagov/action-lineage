@@ -84,7 +84,7 @@ def get_repo_list(
 
 def get_config(repo) -> Optional[dict]:
     """Read the lineage configuration for this repo without checking it out."""
-    config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/.github/lineage.yml"
+    config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CONFIG_FILENAME}"
     logging.debug(f"Checking for config at: {config_url}")
     response = requests.get(config_url)
     if response.status_code == 200:
