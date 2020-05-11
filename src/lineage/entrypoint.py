@@ -21,6 +21,8 @@ import yaml
 ALREADY_UP_TO_DATE = "Already up to date."
 CONFIG_FILENAME = ".github/lineage.yml"
 GIT = "/usr/local/bin/git"
+PR_METADATA = 'lineage:metadata:{"slayed":true}'
+UNRELATED_HISTORY = "fatal: refusing to merge unrelated histories"
 
 
 def run(
@@ -81,27 +83,33 @@ def get_repo_list(
 
 
 def get_config(repo) -> Optional[dict]:
-    """Read the lineage configuration for this repo."""
-    config_path: Path = (Path(repo.full_name) / Path(".github/lineage.yml"))
-    if config_path.exists():
-        with config_path.open() as f:
-            return yaml.safe_load(f)
+    """Read the lineage configuration for this repo without checking it out."""
+    config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/.github/lineage.yml"
+    logging.debug(f"Checking for config at: {config_url}")
+    response = requests.get(config_url)
+    if response.status_code == 200:
+        return yaml.safe_load(response.content)
     else:
         return None
 
 
-def switch_branch(repo, lineage_id, local_branch) -> Tuple[str, bool]:
+def switch_branch(
+    repo, lineage_id: str, local_branch: Optional[str]
+) -> Tuple[str, bool]:
     """Switch to the PR branch, and possibly create it."""
     branch_name = f"lineage/{lineage_id}"
     logging.info(f"Attempting to switch to branch: {branch_name}")
     proc = run([GIT, "switch", branch_name], cwd=repo.full_name, error_ok=True)
     if proc.returncode:
+        if not local_branch:
+            local_branch = repo.default_branch
         # branch does not exist, create it
         logging.info(
             f"Branch did not exist.  Creating: {branch_name} from local {local_branch}"
         )
         logging.info(f"Creating branch {branch_name} from {local_branch}")
-        run([GIT, "branch", branch_name, local_branch], cwd=repo.full_name)
+        # ignore typing on local_branch, it is has been set above if None
+        run([GIT, "branch", branch_name, local_branch], cwd=repo.full_name)  # type: ignore
         logging.info(f"Switching to {branch_name}")
         run([GIT, "switch", branch_name], cwd=repo.full_name)
         return branch_name, True  # branch is new
@@ -111,28 +119,37 @@ def switch_branch(repo, lineage_id, local_branch) -> Tuple[str, bool]:
 
 def fetch(repo, remote_url, remote_branch):
     """Fetch commits from remote branch."""
-    logging.info(f"Fetching {remote_url} {remote_branch}")
-    run([GIT, "fetch", remote_url, remote_branch], cwd=repo.full_name)
+    if remote_branch:
+        logging.info(f"Fetching {remote_url} {remote_branch}")
+        run([GIT, "fetch", remote_url, remote_branch], cwd=repo.full_name)
+    else:
+        logging.info(f"Fetching {remote_url}")
+        run([GIT, "fetch", remote_url], cwd=repo.full_name)
 
 
-def merge(repo) -> Tuple[bool, Optional[str]]:
+def merge(repo) -> Tuple[bool, List[str]]:
     """Merge previously fetched commits."""
-    conflict_diff: Optional[str] = None
+    conflict_file_list: List[str] = []
     logging.info(f"Attempting merge of fetched changes.")
-    proc = run([GIT, "merge", "--no-commit", "FETCH_HEAD"], cwd=repo.full_name)
+    proc = run(
+        [GIT, "merge", "--no-commit", "FETCH_HEAD"], cwd=repo.full_name, error_ok=True
+    )
+    if UNRELATED_HISTORY in proc.stdout.decode():
+        logging.warning("Repository lineage is incorrect.  Merge refused.")
+        return False, conflict_file_list
     if ALREADY_UP_TO_DATE in proc.stdout.decode():
         logging.info("Branch is already up to date.")
-        return False, conflict_diff
+        return False, conflict_file_list
     conflict: bool = proc.returncode != 0
     if conflict:
         logging.info("Conflict detected during merge.  Collecting conflicted files.")
         proc = run([GIT, "diff", "--name-only", "--diff-filter=U"], cwd=repo.full_name)
-        conflict_diff = proc.stdout.decode()
+        conflict_file_list = proc.stdout.decode().split()
         logging.info("Adding conflicts into branch for later resolution.")
         run([GIT, "add", "."], cwd=repo.full_name)
     logging.info("Committing merge.")
     run([GIT, "commit", "--file=.git/MERGE_MSG"], cwd=repo.full_name)
-    return True, conflict_diff
+    return True, conflict_file_list
 
 
 def push(repo, branch_name, username, password):
@@ -145,9 +162,18 @@ def push(repo, branch_name, username, password):
     run([GIT, "push", "--set-upstream", "origin", branch_name], cwd=repo.full_name)
 
 
-def create_pull_request(repo, pr_branch_name, local_branch, title, body, draft):
+def create_pull_request(
+    repo,
+    pr_branch_name: str,
+    local_branch: Optional[str],
+    title: str,
+    body: str,
+    draft: bool,
+):
     """Create a pull request."""
     logging.info(f"Creating a new pull request in {repo.full_name}")
+    if not local_branch:
+        local_branch = repo.default_branch
     repo.create_pull(
         title=title, head=pr_branch_name, base=local_branch, body=body, draft=draft
     )
@@ -200,22 +226,32 @@ def main() -> int:
     repos = get_repo_list(g, repo_query)
     for repo in repos:
         logging.info(f"Checking: {repo.full_name}")
-        logging.info(f"Cloning repository: {repo.clone_url}")
-        run([GIT, "clone", repo.clone_url, repo.full_name])
         config = get_config(repo)
         if not config:
-            logging.info("Repository configuration not detected.")
+            logging.info(f"Lineage configuration not found for {repo.full_name}")
             continue
-        logging.info("Repository configuration detected.")
+        logging.info(f"Lineage configuration found for {repo.full_name}")
+        logging.info(f"Cloning repository: {repo.clone_url}")
+        run([GIT, "clone", repo.clone_url, repo.full_name])
         lineage_id: str
         local_branch: str
         remote_branch: Optional[str]
         remote_url: str
+        if config.get("version") != "1":
+            logging.warning(f"Incompatible config version: {config['version']}")
+            continue
+        if "lineage" not in config:
+            logging.warning("Could not find 'lineage' key in config.")
+            continue
         for lineage_id, v in config["lineage"].items():
-            local_branch = v["local-branch"]
-            remote_branch = v.get("remote-branch")
-            remote_url = v["remote-url"]
             logging.info(f"Processing lineage: {lineage_id}")
+            try:
+                local_branch = v.get("local-branch")
+                remote_branch = None  # v.get("remote-branch")
+                remote_url = v["remote-url"]
+            except KeyError as e:
+                logging.warning(f"Missing config key while reading {lineage_id}: {e}")
+                continue
             logging.info(f"Upstream: {remote_url} {remote_branch or ''}")
             # Check to see if a PR branch already exists
             branch_is_new: bool
@@ -226,8 +262,8 @@ def main() -> int:
             logging.info(f"Pull request branch is new: {branch_is_new}")
             fetch(repo, remote_url, remote_branch)
             changed: bool
-            conflict_diff: Optional[str]
-            changed, conflict_diff = merge(repo)
+            conflict_file_list: List[str]
+            changed, conflict_file_list = merge(repo)
             if not changed:
                 logging.info(
                     f"Already up to date with: {remote_url} {remote_branch or ''} "
@@ -238,12 +274,14 @@ def main() -> int:
             if branch_is_new:
                 logging.info("Creating a new pull request since branch is new.")
                 template_data = {
-                    "conflict_diff": conflict_diff,
+                    "conflict_file_list": conflict_file_list,
+                    "metadata": PR_METADATA,
                     "pr_branch_name": pr_branch_name,
                     "remote_branch": remote_branch,
                     "remote_url": remote_url,
+                    "ssh_url": repo.ssh_url,
                 }
-                if conflict_diff:
+                if conflict_file_list:
                     title = f"⚠️ CONFLICT! Lineage pull request for: {lineage_id}"
                     body = pystache.render(conflict_template, template_data)
                     create_pull_request(
