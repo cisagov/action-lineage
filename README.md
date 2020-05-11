@@ -6,13 +6,64 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/action-lineage.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/action-lineage/context:python)
 [![Known Vulnerabilities](https://snyk.io/test/github/cisagov/action-lineage/develop/badge.svg)](https://snyk.io/test/github/cisagov/action-lineage)
 
-This is a generic skeleton project that can be used to quickly get a
-new [cisagov](https://github.com/cisagov) Python library GitHub
-project started.  This skeleton project contains [licensing
-information](LICENSE), as well as
-[pre-commit hooks](https://pre-commit.com) and
-[GitHub Actions](https://github.com/features/actions) configurations
-appropriate for a Python library project.
+A GitHub Action to automatically generate PR requests from upstream repositories
+regardless of the fork network.
+
+## Repository Lineage configuration ##
+
+Lineage is configured using `.github/lineage.yml` in a repository.  Each
+upstream repository is listed in the `lineage` section.
+
+| Key | Description | Required |
+|-----|-------------|----------|
+| local-branch | The branch that will receive new changes. | No |
+| remote-url   | The `https` URL of the upstream repository. | Yes |
+| remote-branch | The branch in the upstream repository. | No |
+
+Below is an example configuration that defines two upstream repositories. The
+`skeleton` repository specifies both the source and destination branches, while
+the `extra-sauce` repository uses the default branches for both repositories.
+
+```yml
+---
+version: "1"
+
+lineage:
+  skeleton:
+    local-branch: develop
+    remote-url: https://github.com/cisagov/skeleton-generic.git
+    remote-branch: develop
+  extra-sauce:
+    remote-url: https://github.com/felddy/extra-skel-sauce.git
+```
+
+## Sample GitHub Actions workflow ##
+
+The Lineage action requires a personal access token so that it may open pull
+requests.  For public repositories this token must have the `public_repo`
+permission enabled.  The token is provided using the repository secrets.
+
+```yml
+---
+name: lineage_scan
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+jobs:
+  cisagov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all organization repositories
+        uses: cisagov/action-lineage@develop
+        with:
+          access_token: ${{ env.ACCESS_TOKEN }}
+          repo_query: "org:cisagov archived:false"
+```
 
 ## Contributing ##
 
