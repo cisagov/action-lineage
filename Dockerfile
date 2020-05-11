@@ -17,5 +17,6 @@ LABEL org.opencontainers.image.vendor="Cyber and Infrastructure Security Agency"
 LABEL org.opencontainers.image.version=${VERSION}
 
 COPY . ./
+RUN apk add git
 RUN pip install -r requirements.txt
 ENTRYPOINT ["/src/lineage/entrypoint.py"]
