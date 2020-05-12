@@ -3,4 +3,8 @@ version: "1"
 
 lineage:
   skeleton:
+<<<<<<< HEAD
     remote-url: https://github.com/cisagov/skeleton-python-library.git
+=======
+    remote-url: https://github.com/cisagov/skeleton-generic.git
+>>>>>>> 35d8d81d0f16ec4e71e21e415f5ebe8a6e50d58f
