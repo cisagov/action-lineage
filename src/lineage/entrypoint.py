@@ -2,6 +2,7 @@
 """GitHub Action to create pull requests for upstream changes."""
 
 # Standard Python Libraries
+from enum import Enum, auto
 import logging
 import os
 from pathlib import Path
@@ -25,11 +26,19 @@ PR_METADATA = 'lineage:metadata:{"slayed":true}'
 UNRELATED_HISTORY = "fatal: refusing to merge unrelated histories"
 
 
+class OnError(Enum):
+    """Enumeration for handling non-zero subprocess runs."""
+
+    OK = auto()
+    WARN = auto()
+    FAIL = auto()
+
+
 def run(
     cmd: List[str],
     cwd: Optional[str] = None,
     comment: Optional[str] = None,
-    error_ok: bool = False,
+    on_error: OnError = OnError.FAIL,
 ) -> subprocess.CompletedProcess:
     """Run a command and display its output and return code."""
     if comment:
@@ -45,12 +54,16 @@ def run(
     if proc.returncode == 0:
         logging.debug(proc.stdout.decode())
         logging.info("✅ success")
-    elif error_ok:
+    elif on_error == OnError.OK:
         logging.debug(proc.stdout.decode())
         logging.info(f"✅ (error ok) return code: {proc.returncode}")
-    else:
+    elif on_error == OnError.WARN:
         logging.warning(proc.stdout.decode())
-        logging.warning(f"❌ ERROR! return code: {proc.returncode}")
+        logging.warning(f"⚠️ ERROR! return code: {proc.returncode}")
+    else:  # OnError.FAIL
+        logging.fatal(proc.stdout.decode())
+        logging.fatal(f"❌ ERROR! return code: {proc.returncode}")
+        raise Exception(f"Subprocess was expected to exit with 0.")
     return proc
 
 
@@ -99,7 +112,7 @@ def switch_branch(
     """Switch to the PR branch, and possibly create it."""
     branch_name = f"lineage/{lineage_id}"
     logging.info(f"Attempting to switch to branch: {branch_name}")
-    proc = run([GIT, "switch", branch_name], cwd=repo.full_name, error_ok=True)
+    proc = run([GIT, "switch", branch_name], cwd=repo.full_name, on_error=OnError.OK)
     if proc.returncode:
         if not local_branch:
             local_branch = repo.default_branch
@@ -141,7 +154,9 @@ def merge(repo, github_actor: str) -> Tuple[bool, List[str]]:
     )
     logging.info(f"Attempting merge of fetched changes.")
     proc = run(
-        [GIT, "merge", "--no-commit", "FETCH_HEAD"], cwd=repo.full_name, error_ok=True
+        [GIT, "merge", "--no-commit", "FETCH_HEAD"],
+        cwd=repo.full_name,
+        on_error=OnError.OK,
     )
     if UNRELATED_HISTORY in proc.stdout.decode():
         logging.warning("Repository lineage is incorrect.  Merge refused.")
