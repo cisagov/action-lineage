@@ -144,13 +144,10 @@ def merge(repo, github_actor: str) -> Tuple[bool, List[str]]:
     """Merge previously fetched commits."""
     conflict_file_list: List[str] = []
     logging.debug(f"Setting git user.name {github_actor}")
-    proc = run(
-        [GIT, "config", "--global", "user.name", github_actor], cwd=repo.full_name
-    )
+    proc = run([GIT, "config", "user.name", github_actor], cwd=repo.full_name)
     logging.debug(f"Setting git user.email {github_actor}@github.com")
     proc = run(
-        [GIT, "config", "--global", "user.email", f"{github_actor}@github.com"],
-        cwd=repo.full_name,
+        [GIT, "config", "user.email", f"{github_actor}@github.com"], cwd=repo.full_name,
     )
     logging.info(f"Attempting merge of fetched changes.")
     proc = run(
