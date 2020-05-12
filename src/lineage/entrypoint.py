@@ -164,6 +164,14 @@ def merge(repo, github_actor: str) -> Tuple[bool, List[str]]:
     if ALREADY_UP_TO_DATE in proc.stdout.decode():
         logging.info("Branch is already up to date.")
         return False, conflict_file_list
+    # Make sure a modification to the lineage configuration is not in the FETCH_HEAD
+    logging.info(f"Remove any incoming modifications to {CONFIG_FILENAME}")
+    run(
+        [GIT, "reset", "HEAD", "--", CONFIG_FILENAME], cwd=repo.full_name,
+    )
+    run(
+        [GIT, "checkout", "--", CONFIG_FILENAME], cwd=repo.full_name,
+    )
     conflict: bool = proc.returncode != 0
     if conflict:
         logging.info("Conflict detected during merge.  Collecting conflicted files.")
