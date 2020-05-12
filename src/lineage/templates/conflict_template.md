@@ -2,7 +2,7 @@
 
 ![DANGER](https://raw.githubusercontent.com/cisagov/action-lineage/develop/src/achtung.gif)
 
-Lineage has created this pull request to incorporate new changes found in an
+[Lineage] has created this pull request to incorporate new changes found in an
 upstream repository:
 
 Upstream repository: [`{{ remote_url }}`]({{ remote_url }})
@@ -16,7 +16,7 @@ that you must resolve before merging this pull request!
 
 ## How to resolve the conflicts ##
 
-1. Clone the `{{ pr_branch_name }}` branch locally
+1. Clone the `{{ pr_branch_name }}` branch locally:
 
     ```console
     git clone --single-branch --branch {{ pr_branch_name }} {{ ssh_url }}
@@ -30,7 +30,7 @@ that you must resolve before merging this pull request!
     {{/conflict_file_list}}
     ```
 
-1. Resolve each of the conflicts and `add` your changes to the branch.
+1. Resolve each of the conflicts and `add` your changes to the branch:
 
     ```console
     git add {{#conflict_file_list}}{{.}} {{/conflict_file_list}}
@@ -46,21 +46,22 @@ GitHub:
 
 1. Wait for all the automated tests to pass.
 
-1. Check the "Everything is cool" checkbox below.
+1. Check the "Everything is cool" checkbox below:
+
+    - [ ] ✌️ The conflicts in this pull request have been resolved.
 
 1. Mark this draft pull request "Ready for review".
 
-- [ ] ✌️ The conflicts in this pull request have been resolved.
-
 ------------
 
-**Note:** *You are seeing this because you or someone else with access to this
-repository has configured Lineage to open pull requests.*
+**Note:** *You are seeing this because one of this repository's maintainers has
+configured [Lineage] to open pull requests.*
 
 For more information:
 
-🛠 Lineage configurations for this project are stored in `.github/lineage.yml`
+🛠 [Lineage] configurations for this project are stored in `.github/lineage.yml`
 
-📚 [Read more about Lineage](https://github.com/cisagov/action-lineage/)
+📚 [Read more about Lineage][Lineage]
 
 [//]: # ({{ metadata }})
+[Lineage]: https://github.com/cisagov/action-lineage/ "Lineage GitHub Action"
