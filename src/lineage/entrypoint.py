@@ -117,7 +117,7 @@ def switch_branch(
         return branch_name, False  # branch existed
 
 
-def fetch(repo, remote_url, remote_branch):
+def fetch(repo, remote_url: str, remote_branch: Optional[str]):
     """Fetch commits from remote branch."""
     if remote_branch:
         logging.info(f"Fetching {remote_url} {remote_branch}")
@@ -127,9 +127,18 @@ def fetch(repo, remote_url, remote_branch):
         run([GIT, "fetch", remote_url], cwd=repo.full_name)
 
 
-def merge(repo) -> Tuple[bool, List[str]]:
+def merge(repo, github_actor: str) -> Tuple[bool, List[str]]:
     """Merge previously fetched commits."""
     conflict_file_list: List[str] = []
+    logging.debug(f"Setting git user.name {github_actor}")
+    proc = run(
+        [GIT, "config", "--global", "user.name", github_actor], cwd=repo.full_name
+    )
+    logging.debug(f"Setting git user.email {github_actor}@github.com")
+    proc = run(
+        [GIT, "config", "--global", "user.email", f"{github_actor}@github.com"],
+        cwd=repo.full_name,
+    )
     logging.info(f"Attempting merge of fetched changes.")
     proc = run(
         [GIT, "merge", "--no-commit", "FETCH_HEAD"], cwd=repo.full_name, error_ok=True
@@ -152,7 +161,7 @@ def merge(repo) -> Tuple[bool, List[str]]:
     return True, conflict_file_list
 
 
-def push(repo, branch_name, username, password):
+def push(repo, branch_name: str, username: str, password: str):
     """Push changes to remote."""
     parts: ParseResult = urlparse(repo.clone_url)
     cred_url = parts._replace(netloc=f"{username}:{password}@{parts.netloc}").geturl()
@@ -186,6 +195,7 @@ def main() -> int:
 
     # Get inputs from the environment
     access_token: Optional[str] = os.environ.get("INPUT_ACCESS_TOKEN")
+    github_actor: Optional[str] = os.environ.get("GITHUB_ACTOR")
     github_workspace_dir: Optional[str] = os.environ.get("GITHUB_WORKSPACE")
     repo_query: Optional[str] = os.environ.get("INPUT_REPO_QUERY")
 
@@ -194,6 +204,10 @@ def main() -> int:
         logging.fatal(
             "Access token environment variable must be set. (INPUT_ACCESS_TOKEN)"
         )
+        return -1
+
+    if github_actor is None:
+        logging.fatal("GitHub actor environment variable must be set. (GITHUB_ACTOR)")
         return -1
 
     if github_workspace_dir is None:
@@ -263,7 +277,7 @@ def main() -> int:
             fetch(repo, remote_url, remote_branch)
             changed: bool
             conflict_file_list: List[str]
-            changed, conflict_file_list = merge(repo)
+            changed, conflict_file_list = merge(repo, github_actor)
             if not changed:
                 logging.info(
                     f"Already up to date with: {remote_url} {remote_branch or ''} "
