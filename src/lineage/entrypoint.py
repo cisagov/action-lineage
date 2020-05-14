@@ -12,7 +12,7 @@ from typing import Generator, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
 # Third-Party Libraries
-from github import Github, Repository
+from github import Github, PullRequest, Repository
 import pkg_resources
 import pystache
 import requests
@@ -21,7 +21,8 @@ import yaml
 # Constants
 ALREADY_UP_TO_DATE = "Already up to date."
 CONFIG_FILENAME = ".github/lineage.yml"
-GIT = "/usr/bin/git"
+CODEOWNERS_FILENAME = ".github/CODEOWNERS"
+GIT = "/usr/local/bin/git"
 PR_METADATA = 'lineage:metadata:{"slayed":true}'
 UNRELATED_HISTORY = "fatal: refusing to merge unrelated histories"
 
@@ -63,7 +64,7 @@ def run(
     else:  # OnError.FAIL
         logging.fatal(proc.stdout.decode())
         logging.fatal(f"❌ ERROR! return code: {proc.returncode}")
-        raise Exception(f"Subprocess was expected to exit with 0.")
+        raise Exception("Subprocess was expected to exit with 0.")
     return proc
 
 
@@ -95,7 +96,7 @@ def get_repo_list(
         yield repo
 
 
-def get_config(repo) -> Optional[dict]:
+def get_config(repo: Repository.Repository) -> Optional[dict]:
     """Read the lineage configuration for this repo without checking it out."""
     config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CONFIG_FILENAME}"
     logging.debug(f"Checking for config at: {config_url}")
@@ -107,7 +108,7 @@ def get_config(repo) -> Optional[dict]:
 
 
 def switch_branch(
-    repo, lineage_id: str, local_branch: Optional[str]
+    repo: Repository.Repository, lineage_id: str, local_branch: Optional[str]
 ) -> Tuple[str, bool]:
     """Switch to the PR branch, and possibly create it."""
     branch_name = f"lineage/{lineage_id}"
@@ -130,7 +131,7 @@ def switch_branch(
         return branch_name, False  # branch existed
 
 
-def fetch(repo, remote_url: str, remote_branch: Optional[str]):
+def fetch(repo: Repository.Repository, remote_url: str, remote_branch: Optional[str]):
     """Fetch commits from remote branch."""
     if remote_branch:
         logging.info(f"Fetching {remote_url} {remote_branch}")
@@ -140,7 +141,7 @@ def fetch(repo, remote_url: str, remote_branch: Optional[str]):
         run([GIT, "fetch", remote_url], cwd=repo.full_name)
 
 
-def merge(repo, github_actor: str) -> Tuple[bool, List[str]]:
+def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[str]]:
     """Merge previously fetched commits."""
     conflict_file_list: List[str] = []
     logging.debug(f"Setting git user.name {github_actor}")
@@ -149,7 +150,7 @@ def merge(repo, github_actor: str) -> Tuple[bool, List[str]]:
     proc = run(
         [GIT, "config", "user.email", f"{github_actor}@github.com"], cwd=repo.full_name,
     )
-    logging.info(f"Attempting merge of fetched changes.")
+    logging.info("Attempting merge of fetched changes.")
     proc = run(
         [GIT, "merge", "--no-commit", "FETCH_HEAD"],
         cwd=repo.full_name,
@@ -181,7 +182,7 @@ def merge(repo, github_actor: str) -> Tuple[bool, List[str]]:
     return True, conflict_file_list
 
 
-def push(repo, branch_name: str, username: str, password: str):
+def push(repo: Repository.Repository, branch_name: str, username: str, password: str):
     """Push changes to remote."""
     parts: ParseResult = urlparse(repo.clone_url)
     cred_url = parts._replace(netloc=f"{username}:{password}@{parts.netloc}").geturl()
@@ -192,7 +193,7 @@ def push(repo, branch_name: str, username: str, password: str):
 
 
 def create_pull_request(
-    repo,
+    repo: Repository.Repository,
     pr_branch_name: str,
     local_branch: Optional[str],
     title: str,
@@ -203,9 +204,38 @@ def create_pull_request(
     logging.info(f"Creating a new pull request in {repo.full_name}")
     if not local_branch:
         local_branch = repo.default_branch
-    repo.create_pull(
+    pull_request: PullRequest.PullRequest = repo.create_pull(
         title=title, head=pr_branch_name, base=local_branch, body=body, draft=draft
     )
+    # Assign code owners to pull request
+    for owner in get_code_owners(repo):
+        logging.info(f"Assigning code owner {owner} to pull request.")
+        pull_request.add_to_assignees(owner)
+
+
+def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
+    """Get the code owners for this repo."""
+    config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CODEOWNERS_FILENAME}"
+    logging.debug(f"Checking for code owners at: {config_url}")
+    response = requests.get(config_url)
+    if response.status_code == 200:
+        lines = response.content.decode().split("\n")
+        for line in lines:
+            if not line.strip() or line.startswith("#"):
+                # skip comments and empty lines
+                continue
+            # We're just going to take the first line of code code_owners
+            # It looks like:
+            # *       @dav3r @felddy @hillaryj @jsf9k @mcdonnnj @cisagov/team-ois
+            # Drop the *, and skip any teams
+            items = line.split()[1:]
+            for item in items:
+                if "/" in item:  # it's a team
+                    continue
+                # it's a person, drop @ sign
+                yield item[1:]
+            # Only process the first line with content
+            break
 
 
 def main() -> int:
