@@ -1,6 +1,6 @@
 # Lineage Pull Request: CONFLICT #
 
-![DANGER](https://raw.githubusercontent.com/cisagov/action-lineage/develop/src/achtung.gif)
+<img align="left" width="100" src="https://raw.githubusercontent.com/cisagov/action-lineage/develop/src/achtung.gif">
 
 [Lineage] has created this pull request to incorporate new changes found in an
 upstream repository:
@@ -16,32 +16,33 @@ that you must resolve before merging this pull request!
 
 ## How to resolve the conflicts ##
 
-1. Clone the `{{ pr_branch_name }}` branch locally:
+1. Take ownership of this pull request by removing any other assignees.
+
+1. Clone the repository locally, and reapply the merge:
 
     ```console
-    git clone --single-branch --branch {{ pr_branch_name }} {{ ssh_url }}
+    git clone {{ ssh_url }} {{ repo_name }}
+    cd {{ repo_name }}
+    git remote add {{ lineage_id }} {{ remote_url }}
+    git remote set-url --push {{ lineage_id }} no_push
+    git switch {{ local_branch }}
+    git checkout -b {{ pr_branch_name }} --track origin/{{ local_branch }}
+    git pull {{ lineage_id }} {{ remote_branch }}{{#display_lineage_config_skip}}
+    git checkout --ours -- {{lineage_config_filename}}
+    git add {{lineage_config_filename}}{{/display_lineage_config_skip}}
+    git status
     ```
 
-1. Review each of the following files looking for [conflict-resolution markers](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging#_basic_merge_conflicts):
+1. Review the changes displayed by the `status` command.  Fix any conflicts and
+   possibly incorrect auto-merges.
 
-    ```console
-    {{#conflict_file_list}}
-    {{.}}
-    {{/conflict_file_list}}
-    ```
-
-1. Resolve each of the conflicts and `add` your changes to the branch:
+1. After resolving each of the conflicts, `add` your changes to the branch,
+   `commit`, and `push` your changes:
 
     ```console
     git add {{#conflict_file_list}}{{.}} {{/conflict_file_list}}
-    ```
-
-1. Once all the changes have been added, `commit` and `push` the changes back to
-GitHub:
-
-    ```console
-    git commit --message="Resolved Lineage conflicts."
-    git push
+    git commit --message="Resolve Lineage conflicts."
+    git push --force --set-upstream origin {{ pr_branch_name }}
     ```
 
 1. Wait for all the automated tests to pass.
