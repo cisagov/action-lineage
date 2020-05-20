@@ -299,7 +299,7 @@ def main() -> int:
             logging.info(f"Processing lineage: {lineage_id}")
             try:
                 local_branch = v.get("local-branch")
-                remote_branch = v.get("remote-branch")
+                remote_branch = v.get("remote-branch", "HEAD")
                 remote_url = v["remote-url"]
             except KeyError as e:
                 logging.warning(f"Missing config key while reading {lineage_id}: {e}")
