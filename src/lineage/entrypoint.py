@@ -108,15 +108,13 @@ def get_config(repo: Repository.Repository) -> Optional[dict]:
 
 
 def switch_branch(
-    repo: Repository.Repository, lineage_id: str, local_branch: Optional[str]
+    repo: Repository.Repository, lineage_id: str, local_branch: str
 ) -> Tuple[str, bool]:
     """Switch to the PR branch, and possibly create it."""
     branch_name = f"lineage/{lineage_id}"
     logging.info(f"Attempting to switch to branch: {branch_name}")
     proc = run([GIT, "switch", branch_name], cwd=repo.full_name, on_error=OnError.OK)
     if proc.returncode:
-        if not local_branch:
-            local_branch = repo.default_branch
         # branch does not exist, create it
         logging.info(
             f"Branch did not exist.  Creating: {branch_name} from local {local_branch}"
@@ -162,14 +160,6 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
     if ALREADY_UP_TO_DATE in proc.stdout.decode():
         logging.info("Branch is already up to date.")
         return False, conflict_file_list
-    # Make sure a modification to the lineage configuration is not in the FETCH_HEAD
-    logging.info(f"Remove any incoming modifications to {CONFIG_FILENAME}")
-    run(
-        [GIT, "reset", "HEAD", "--", CONFIG_FILENAME], cwd=repo.full_name,
-    )
-    run(
-        [GIT, "checkout", "--", CONFIG_FILENAME], cwd=repo.full_name,
-    )
     conflict: bool = proc.returncode != 0
     if conflict:
         logging.info("Conflict detected during merge.  Collecting conflicted files.")
@@ -195,15 +185,13 @@ def push(repo: Repository.Repository, branch_name: str, username: str, password:
 def create_pull_request(
     repo: Repository.Repository,
     pr_branch_name: str,
-    local_branch: Optional[str],
+    local_branch: str,
     title: str,
     body: str,
     draft: bool,
 ):
     """Create a pull request."""
     logging.info(f"Creating a new pull request in {repo.full_name}")
-    if not local_branch:
-        local_branch = repo.default_branch
     pull_request: PullRequest.PullRequest = repo.create_pull(
         title=title, head=pr_branch_name, base=local_branch, body=body, draft=draft
     )
@@ -311,11 +299,15 @@ def main() -> int:
             logging.info(f"Processing lineage: {lineage_id}")
             try:
                 local_branch = v.get("local-branch")
-                remote_branch = None  # v.get("remote-branch")
+                remote_branch = v.get("remote-branch")
                 remote_url = v["remote-url"]
             except KeyError as e:
                 logging.warning(f"Missing config key while reading {lineage_id}: {e}")
                 continue
+            # if a local_branch is not specified use the repo default
+            if not local_branch:
+                local_branch = repo.default_branch
+
             logging.info(f"Upstream: {remote_url} {remote_branch or ''}")
             # Check to see if a PR branch already exists
             branch_is_new: bool
@@ -334,15 +326,24 @@ def main() -> int:
                 )
                 continue
             push(repo, pr_branch_name, "git", access_token)
-
+            # Display instructions for ignoring incoming Lineage config changes
+            display_lineage_config_skip: bool = CONFIG_FILENAME in conflict_file_list
+            if display_lineage_config_skip:
+                # This will no longer be a conflict, we tell user how to ignore.
+                conflict_file_list.remove(CONFIG_FILENAME)
             if branch_is_new:
                 logging.info("Creating a new pull request since branch is new.")
                 template_data = {
                     "conflict_file_list": conflict_file_list,
+                    "display_lineage_config_skip": display_lineage_config_skip,
+                    "lineage_config_filename": CONFIG_FILENAME,
+                    "lineage_id": lineage_id,
+                    "local_branch": local_branch,
                     "metadata": PR_METADATA,
                     "pr_branch_name": pr_branch_name,
                     "remote_branch": remote_branch,
                     "remote_url": remote_url,
+                    "repo_name": repo.name,
                     "ssh_url": repo.ssh_url,
                 }
                 if conflict_file_list:
