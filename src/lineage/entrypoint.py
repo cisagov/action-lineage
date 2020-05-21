@@ -22,7 +22,7 @@ import yaml
 ALREADY_UP_TO_DATE = "Already up to date."
 CONFIG_FILENAME = ".github/lineage.yml"
 CODEOWNERS_FILENAME = ".github/CODEOWNERS"
-GIT = "/usr/bin/git"
+GIT = "/usr/local/bin/git"
 PR_METADATA = 'lineage:metadata:{"slayed":true}'
 UNRELATED_HISTORY = "fatal: refusing to merge unrelated histories"
 
@@ -154,19 +154,27 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
         cwd=repo.full_name,
         on_error=OnError.OK,
     )
+    conflict: bool = proc.returncode != 0
     if UNRELATED_HISTORY in proc.stdout.decode():
         logging.warning("Repository lineage is incorrect.  Merge refused.")
         return False, conflict_file_list
     if ALREADY_UP_TO_DATE in proc.stdout.decode():
         logging.info("Branch is already up to date.")
         return False, conflict_file_list
-    conflict: bool = proc.returncode != 0
     if conflict:
         logging.info("Conflict detected during merge.  Collecting conflicted files.")
         proc = run([GIT, "diff", "--name-only", "--diff-filter=U"], cwd=repo.full_name)
         conflict_file_list = proc.stdout.decode().split()
         logging.info("Adding conflicts into branch for later resolution.")
         run([GIT, "add", "."], cwd=repo.full_name)
+    # Make sure a modification to the lineage configuration is not in the FETCH_HEAD
+    logging.info(f"Remove any incoming modifications to {CONFIG_FILENAME}")
+    run(
+        [GIT, "reset", "HEAD", "--", CONFIG_FILENAME], cwd=repo.full_name,
+    )
+    run(
+        [GIT, "checkout", "--", CONFIG_FILENAME], cwd=repo.full_name,
+    )
     logging.info("Committing merge.")
     run([GIT, "commit", "--file=.git/MERGE_MSG"], cwd=repo.full_name)
     return True, conflict_file_list
