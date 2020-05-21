@@ -22,7 +22,7 @@ import yaml
 ALREADY_UP_TO_DATE = "Already up to date."
 CONFIG_FILENAME = ".github/lineage.yml"
 CODEOWNERS_FILENAME = ".github/CODEOWNERS"
-GIT = "/usr/local/bin/git"
+GIT = "/usr/bin/git"
 PR_METADATA = 'lineage:metadata:{"slayed":true}'
 UNRELATED_HISTORY = "fatal: refusing to merge unrelated histories"
 
