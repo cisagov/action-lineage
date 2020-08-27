@@ -379,11 +379,11 @@ def main() -> int:
                             repo, pr_branch_name, local_branch, title, body, draft=False
                         )
                 else:
-                    logging.info(
-                        "Not creating a new pull request since the branch already existed."
+                    logging.warning(
+                        "Not creating a new pull request because the branch already exists."
                     )
             else:
-                logging.info(
+                logging.warning(
                     "Not creating a new pull request because of insufficient permissions."
                 )
 
