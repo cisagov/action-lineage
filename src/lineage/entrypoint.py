@@ -60,7 +60,7 @@ def run(
         logging.info(f"✅ (error ok) return code: {proc.returncode}")
     elif on_error == OnError.WARN:
         logging.warning(proc.stdout.decode())
-        logging.warning(f"⚠️ ERROR! return code: {proc.returncode}")
+        logging.warning(f"⚠️ WARNING! return code: {proc.returncode}")
     else:  # OnError.FAIL
         logging.fatal(proc.stdout.decode())
         logging.fatal(f"❌ ERROR! return code: {proc.returncode}")
@@ -186,7 +186,7 @@ def push(
     """Push changes to remote."""
     if not repo.permissions.push:
         logging.warning(
-            f"⚠️ ERROR! Missing 'push' permission on '{repo.owner.login}/{repo.name}'"
+            f"⚠️ WARNING! Missing 'push' permission on '{repo.owner.login}/{repo.name}'"
         )
         return False
     else:
