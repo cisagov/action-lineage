@@ -1,6 +1,7 @@
 # action-lineage #
 
 [![GitHub Build Status](https://github.com/cisagov/action-lineage/workflows/build/badge.svg)](https://github.com/cisagov/action-lineage/actions)
+[![Lineage Scan Status](https://github.com/cisagov/action-lineage/workflows/lineage_scan/badge.svg)](https://github.com/cisagov/action-lineage/actions?query=workflow%3Alineage_scan)
 [![Coverage Status](https://coveralls.io/repos/github/cisagov/action-lineage/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/action-lineage?branch=develop)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/action-lineage.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/action-lineage/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/action-lineage.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/action-lineage/context:python)
