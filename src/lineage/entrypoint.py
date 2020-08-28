@@ -60,7 +60,7 @@ def run(
         logging.info(f"✅ (error ok) return code: {proc.returncode}")
     elif on_error == OnError.WARN:
         logging.warning(proc.stdout.decode())
-        logging.warning(f"⚠️ ERROR! return code: {proc.returncode}")
+        logging.warning(f"⚠️ WARNING! return code: {proc.returncode}")
     else:  # OnError.FAIL
         logging.fatal(proc.stdout.decode())
         logging.fatal(f"❌ ERROR! return code: {proc.returncode}")
@@ -180,14 +180,25 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
     return True, conflict_file_list
 
 
-def push(repo: Repository.Repository, branch_name: str, username: str, password: str):
+def push(
+    repo: Repository.Repository, branch_name: str, username: str, password: str
+) -> bool:
     """Push changes to remote."""
-    parts: ParseResult = urlparse(repo.clone_url)
-    cred_url = parts._replace(netloc=f"{username}:{password}@{parts.netloc}").geturl()
-    logging.info("Assigning credentials for push.")
-    run([GIT, "remote", "set-url", "origin", cred_url], cwd=repo.full_name)
-    logging.info(f"Pushing {branch_name} to remote.")
-    run([GIT, "push", "--set-upstream", "origin", branch_name], cwd=repo.full_name)
+    if not repo.permissions.push:
+        logging.warning(
+            f"⚠️ WARNING! Missing 'push' permission on '{repo.owner.login}/{repo.name}'"
+        )
+        return False
+    else:
+        parts: ParseResult = urlparse(repo.clone_url)
+        cred_url = parts._replace(
+            netloc=f"{username}:{password}@{parts.netloc}"
+        ).geturl()
+        logging.info("Assigning credentials for push.")
+        run([GIT, "remote", "set-url", "origin", cred_url], cwd=repo.full_name)
+        logging.info(f"Pushing {branch_name} to remote.")
+        run([GIT, "push", "--set-upstream", "origin", branch_name], cwd=repo.full_name)
+        return True
 
 
 def create_pull_request(
@@ -333,42 +344,47 @@ def main() -> int:
                     f"Already up to date with: {remote_url} {remote_branch or ''} "
                 )
                 continue
-            push(repo, pr_branch_name, "git", access_token)
-            # Display instructions for ignoring incoming Lineage config changes
-            display_lineage_config_skip: bool = CONFIG_FILENAME in conflict_file_list
-            if display_lineage_config_skip:
-                # This will no longer be a conflict, we tell user how to ignore.
-                conflict_file_list.remove(CONFIG_FILENAME)
-            if branch_is_new:
-                logging.info("Creating a new pull request since branch is new.")
-                template_data = {
-                    "conflict_file_list": conflict_file_list,
-                    "display_lineage_config_skip": display_lineage_config_skip,
-                    "lineage_config_filename": CONFIG_FILENAME,
-                    "lineage_id": lineage_id,
-                    "local_branch": local_branch,
-                    "metadata": PR_METADATA,
-                    "pr_branch_name": pr_branch_name,
-                    "remote_branch": remote_branch,
-                    "remote_url": remote_url,
-                    "repo_name": repo.name,
-                    "ssh_url": repo.ssh_url,
-                }
-                if conflict_file_list:
-                    title = f"⚠️ CONFLICT! Lineage pull request for: {lineage_id}"
-                    body = pystache.render(conflict_template, template_data)
-                    create_pull_request(
-                        repo, pr_branch_name, local_branch, title, body, draft=True
-                    )
+            # If we can successfully push, continue with generating a PR
+            if push(repo, pr_branch_name, "git", access_token):
+                # Display instructions for ignoring incoming Lineage config changes
+                display_lineage_config_skip: bool = CONFIG_FILENAME in conflict_file_list
+                if display_lineage_config_skip:
+                    # This will no longer be a conflict, we tell user how to ignore.
+                    conflict_file_list.remove(CONFIG_FILENAME)
+                if branch_is_new:
+                    logging.info("Creating a new pull request since branch is new.")
+                    template_data = {
+                        "conflict_file_list": conflict_file_list,
+                        "display_lineage_config_skip": display_lineage_config_skip,
+                        "lineage_config_filename": CONFIG_FILENAME,
+                        "lineage_id": lineage_id,
+                        "local_branch": local_branch,
+                        "metadata": PR_METADATA,
+                        "pr_branch_name": pr_branch_name,
+                        "remote_branch": remote_branch,
+                        "remote_url": remote_url,
+                        "repo_name": repo.name,
+                        "ssh_url": repo.ssh_url,
+                    }
+                    if conflict_file_list:
+                        title = f"⚠️ CONFLICT! Lineage pull request for: {lineage_id}"
+                        body = pystache.render(conflict_template, template_data)
+                        create_pull_request(
+                            repo, pr_branch_name, local_branch, title, body, draft=True
+                        )
+                    else:
+                        title = f"Lineage pull request for: {lineage_id}"
+                        body = pystache.render(clean_template, template_data)
+                        create_pull_request(
+                            repo, pr_branch_name, local_branch, title, body, draft=False
+                        )
                 else:
-                    title = f"Lineage pull request for: {lineage_id}"
-                    body = pystache.render(clean_template, template_data)
-                    create_pull_request(
-                        repo, pr_branch_name, local_branch, title, body, draft=False
+                    logging.warning(
+                        "Not creating a new pull request because the branch already exists."
                     )
             else:
-                logging.info(
-                    "Not creating a new pull request since the branch already existed."
+                logging.warning(
+                    "Not creating a new pull request because of insufficient permissions."
                 )
 
     logging.info("Completed.")
