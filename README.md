@@ -66,6 +66,11 @@ jobs:
           repo_query: "org:cisagov archived:false"
 ```
 
+## Adding Lineage to an existing repository ##
+
+To add Lineage configurations to an existing repository, please see
+[the Add Lineage documentation](Add-Lineage.md).
+
 ## Contributing ##
 
 We welcome contributions!  Please see [here](CONTRIBUTING.md) for
