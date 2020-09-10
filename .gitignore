@@ -3,5 +3,5 @@ __pycache__
 .mypy_cache
 .pytest_cache
 .python-version
-*.egg-info
 *-mine*
+*.egg-info

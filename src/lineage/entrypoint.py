@@ -146,7 +146,8 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
     proc = run([GIT, "config", "user.name", github_actor], cwd=repo.full_name)
     logging.debug(f"Setting git user.email {github_actor}@github.com")
     proc = run(
-        [GIT, "config", "user.email", f"{github_actor}@github.com"], cwd=repo.full_name,
+        [GIT, "config", "user.email", f"{github_actor}@github.com"],
+        cwd=repo.full_name,
     )
     logging.info("Attempting merge of fetched changes.")
     proc = run(
@@ -170,10 +171,12 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
     # Make sure a modification to the lineage configuration is not in the FETCH_HEAD
     logging.info(f"Remove any incoming modifications to {CONFIG_FILENAME}")
     run(
-        [GIT, "reset", "HEAD", "--", CONFIG_FILENAME], cwd=repo.full_name,
+        [GIT, "reset", "HEAD", "--", CONFIG_FILENAME],
+        cwd=repo.full_name,
     )
     run(
-        [GIT, "checkout", "--", CONFIG_FILENAME], cwd=repo.full_name,
+        [GIT, "checkout", "--", CONFIG_FILENAME],
+        cwd=repo.full_name,
     )
     logging.info("Committing merge.")
     run([GIT, "commit", "--file=.git/MERGE_MSG"], cwd=repo.full_name)
@@ -347,7 +350,9 @@ def main() -> int:
             # If we can successfully push, continue with generating a PR
             if push(repo, pr_branch_name, "git", access_token):
                 # Display instructions for ignoring incoming Lineage config changes
-                display_lineage_config_skip: bool = CONFIG_FILENAME in conflict_file_list
+                display_lineage_config_skip: bool = (
+                    CONFIG_FILENAME in conflict_file_list
+                )
                 if display_lineage_config_skip:
                     # This will no longer be a conflict, we tell user how to ignore.
                     conflict_file_list.remove(CONFIG_FILENAME)
