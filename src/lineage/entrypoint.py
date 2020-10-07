@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """GitHub Action to create pull requests for upstream changes."""
 
 # Standard Python Libraries
@@ -7,7 +6,6 @@ import logging
 import os
 from pathlib import Path
 import subprocess  # nosec
-import sys
 from typing import Generator, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
@@ -394,7 +392,3 @@ def main() -> int:
 
     logging.info("Completed.")
     return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
