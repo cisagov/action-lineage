@@ -18,5 +18,5 @@ LABEL org.opencontainers.image.version=${VERSION}
 
 COPY . ./
 RUN apk add git
-RUN pip install -r requirements.txt
-ENTRYPOINT ["/src/lineage/entrypoint.py"]
+RUN pip install --requirement requirements.txt
+ENTRYPOINT ["python3", "-m", "lineage"]
