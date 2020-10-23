@@ -41,7 +41,9 @@ that you must resolve before merging this pull request!
 
     ```console
     git add {{#conflict_file_list}}{{.}} {{/conflict_file_list}}
-    git commit --message="Resolve Lineage conflicts."
+    # You may append to the default merge commit message that git creates for
+    # you, but _do not_ overwrite it.  The content it provides is useful.
+    git commit
     git push --force --set-upstream origin {{ pr_branch_name }}
     ```
 
