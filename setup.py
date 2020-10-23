@@ -31,7 +31,7 @@ def package_vars(version_file):
 
 
 setup(
-    name="Lineage Action",
+    name="lineage",
     # Versions should comply with PEP440
     version=package_vars("src/lineage/_version.py")["__version__"],
     description="GitHub Action to rebuild respositories that haven't be built in a while.",
