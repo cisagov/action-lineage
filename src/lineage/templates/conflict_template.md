@@ -36,16 +36,19 @@ that you must resolve before merging this pull request!
 1. Review the changes displayed by the `status` command.  Fix any conflicts and
    possibly incorrect auto-merges.
 
-1. After resolving each of the conflicts, `add` your changes to the branch,
-   `commit`, and `push` your changes:
+1. After resolving each of the conflicts, `add` your changes to the
+   branch, `commit`, and `push` your changes:
 
     ```console
     git add {{#conflict_file_list}}{{.}} {{/conflict_file_list}}
-    # You may append to the default merge commit message that git creates for
-    # you, but _do not_ overwrite it.  The content it provides is useful.
     git commit
     git push --force --set-upstream origin {{ pr_branch_name }}
     ```
+
+    Note that you may _append_ to the default merge commit message
+    that git creates for you, but *please do not delete the existing
+    content*.  It provides useful information about the merge that is
+    being performed.
 
 1. Wait for all the automated tests to pass.
 
