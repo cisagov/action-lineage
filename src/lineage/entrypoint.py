@@ -21,6 +21,7 @@ ALREADY_UP_TO_DATE = "Already up to date."
 CONFIG_FILENAME = ".github/lineage.yml"
 CODEOWNERS_FILENAME = ".github/CODEOWNERS"
 GIT = "/usr/bin/git"
+PR_LABEL_NAMES = ["upstream update"]
 PR_METADATA = 'lineage:metadata:{"slayed":true}'
 UNRELATED_HISTORY = "fatal: refusing to merge unrelated histories"
 
@@ -219,6 +220,14 @@ def create_pull_request(
     for owner in get_code_owners(repo):
         logging.info(f"Assigning code owner {owner} to pull request.")
         pull_request.add_to_assignees(owner)
+
+    # Build a list of labels to add from the labels available in the repository
+    # and the list of desired labels
+    repo_labels = repo.get_labels()
+    pr_labels = [label for label in repo_labels if label.name in PR_LABEL_NAMES]
+    if pr_labels:
+        # Assign desired labels to pull request
+        pull_request.add_to_labels(*pr_labels)
 
 
 def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
