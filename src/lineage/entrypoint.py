@@ -357,19 +357,10 @@ def main() -> None:
                 continue
             # If we can successfully push, continue with generating a PR
             if push(repo, pr_branch_name, "git", access_token):
-                # Display instructions for ignoring incoming Lineage config changes
-                display_lineage_config_skip: bool = (
-                    CONFIG_FILENAME in conflict_file_list
-                )
-                if display_lineage_config_skip:
-                    # This will no longer be a conflict, we tell user how to ignore.
-                    conflict_file_list.remove(CONFIG_FILENAME)
                 if branch_is_new:
                     logging.info("Creating a new pull request since branch is new.")
                     template_data = {
                         "conflict_file_list": conflict_file_list,
-                        "display_lineage_config_skip": display_lineage_config_skip,
-                        "lineage_config_filename": CONFIG_FILENAME,
                         "lineage_id": lineage_id,
                         "local_branch": local_branch,
                         "metadata": PR_METADATA,
