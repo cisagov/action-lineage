@@ -87,7 +87,7 @@ setup(
     package_data={"lineage": ["templates/*.md"]},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
-    install_requires=["PyGithub", "pystache", "PyYAML", "setuptools >= 24.2.0"],
+    install_requires=["chevron", "PyGithub", "PyYAML", "setuptools >= 24.2.0"],
     extras_require={
         "test": [
             "coverage",
