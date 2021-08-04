@@ -6,6 +6,7 @@ import logging
 import os
 from pathlib import Path
 import subprocess  # nosec
+import sys
 from typing import Generator, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
@@ -255,8 +256,8 @@ def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
             break
 
 
-def main() -> int:
-    """Parse evironment and perform requested actions."""
+def main() -> None:
+    """Parse environment and perform requested actions."""
     # Set up logging
     logging.basicConfig(format="%(levelname)s %(message)s", level="INFO")
 
@@ -271,23 +272,23 @@ def main() -> int:
         logging.fatal(
             "Access token environment variable must be set. (INPUT_ACCESS_TOKEN)"
         )
-        return -1
+        sys.exit(-1)
 
     if github_actor is None:
         logging.fatal("GitHub actor environment variable must be set. (GITHUB_ACTOR)")
-        return -1
+        sys.exit(-1)
 
     if github_workspace_dir is None:
         logging.fatal(
             "GitHub workspace environment variable must be set. (GITHUB_WORKSPACE)"
         )
-        return -1
+        sys.exit(-1)
 
     if repo_query is None:
         logging.fatal(
             "Reository query environment variable must be set. (INPUT_REPO_QUERY)"
         )
-        return -1
+        sys.exit(-1)
 
     # Ensure we are working in our workspace
     os.chdir(github_workspace_dir)
@@ -400,4 +401,3 @@ def main() -> int:
                 )
 
     logging.info("Completed.")
-    return 0
