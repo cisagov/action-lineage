@@ -257,7 +257,7 @@ def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
 
 
 def main() -> None:
-    """Parse evironment and perform requested actions."""
+    """Parse environment and perform requested actions."""
     # Set up logging
     logging.basicConfig(format="%(levelname)s %(message)s", level="INFO")
 
