@@ -27,9 +27,7 @@ that you must resolve before merging this pull request!
     git remote set-url --push {{ lineage_id }} no_push
     git switch {{ local_branch }}
     git checkout -b {{ pr_branch_name }} --track origin/{{ local_branch }}
-    git pull {{ lineage_id }} {{ remote_branch }}{{#display_lineage_config_skip}}
-    git checkout --ours -- {{lineage_config_filename}}
-    git add {{lineage_config_filename}}{{/display_lineage_config_skip}}
+    git pull {{ lineage_id }} {{ remote_branch }}
     git status
     ```
 
