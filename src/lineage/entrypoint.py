@@ -11,9 +11,9 @@ from typing import Generator, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
 # Third-Party Libraries
+import chevron
 from github import Github, PullRequest, Repository
 import pkg_resources
-import pystache
 import requests
 import yaml
 
@@ -372,13 +372,13 @@ def main() -> None:
                     }
                     if conflict_file_list:
                         title = f"⚠️ CONFLICT! Lineage pull request for: {lineage_id}"
-                        body = pystache.render(conflict_template, template_data)
+                        body = chevron.render(conflict_template, template_data)
                         create_pull_request(
                             repo, pr_branch_name, local_branch, title, body, draft=True
                         )
                     else:
                         title = f"Lineage pull request for: {lineage_id}"
-                        body = pystache.render(clean_template, template_data)
+                        body = chevron.render(clean_template, template_data)
                         create_pull_request(
                             repo, pr_branch_name, local_branch, title, body, draft=False
                         )
