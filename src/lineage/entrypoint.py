@@ -95,7 +95,12 @@ def get_repo_list(
     # call to `Github.search_repositories()` that causes repositories on page
     # breaks to be duplicated when iterating over results. The only issue I could
     # find that referenced this problem is
-    # https://github.com/PyGithub/PyGithub/issues/1748
+    # https://github.com/PyGithub/PyGithub/issues/1748,
+    # which suggests that adding the sort="updated" parameter to the
+    # `Github.search_repositories()` call helps. Hence I am adding it here.
+    #
+    # See also pull request #33 in this repository:
+    # https://github.com/cisagov/action-lineage/pull/33
     matching_repos = g.search_repositories(query=repo_query, sort="updated")
     for repo in matching_repos:
         yield repo
@@ -320,7 +325,14 @@ def main() -> None:
         logging.info(f"Lineage configuration found for {repo.full_name}")
         logging.info(f"Cloning repository: {repo.clone_url}")
         # The failure of a repository to clone should not cause the entire
-        # run to fail.
+        # run to fail. See related comment above in the body of the
+        # get_repo_list() function for an example of such a case which caused an
+        # exception with the following error when attempting to clone:
+        # fatal: destination path 'repo_full_name' already exists and is not an
+        # empty directory.
+        #
+        # See also pull request #33 in this repository:
+        # https://github.com/cisagov/action-lineage/pull/33
         try:
             run([GIT, "clone", repo.clone_url, repo.full_name])
         except Exception as err:
