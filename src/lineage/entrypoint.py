@@ -91,7 +91,12 @@ def get_repo_list(
 ) -> Generator[Repository.Repository, None, None]:
     """Generate a list of repositories based on the query."""
     logging.info(f"Querying for repositories: {repo_query}")
-    matching_repos = g.search_repositories(query=repo_query)
+    # Sometimes there is an issue with the pagination of results from the
+    # call to `Github.search_repositories()` that causes repositories on page
+    # breaks to be duplicated when iterating over results. The only issue I could
+    # find that referenced this problem is
+    # https://github.com/PyGithub/PyGithub/issues/1748
+    matching_repos = g.search_repositories(query=repo_query, sort="updated")
     for repo in matching_repos:
         yield repo
 
