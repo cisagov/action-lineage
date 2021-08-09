@@ -319,7 +319,14 @@ def main() -> None:
             continue
         logging.info(f"Lineage configuration found for {repo.full_name}")
         logging.info(f"Cloning repository: {repo.clone_url}")
-        run([GIT, "clone", repo.clone_url, repo.full_name])
+        # The failure of a repository to clone should not cause the entire
+        # run to fail.
+        try:
+            run([GIT, "clone", repo.clone_url, repo.full_name])
+        except Exception as err:
+            logging.warning("Unable to clone %s.", repo.full_name)
+            logging.warning(err)
+            continue
         lineage_id: str
         local_branch: str
         remote_branch: Optional[str]
