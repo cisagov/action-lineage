@@ -9,7 +9,7 @@ Upstream repository: [`{{ remote_url }}`]({{ remote_url }})
 Check the changes in this pull request to ensure they won't cause issues with
 your project.
 
-------------
+---
 
 **Note:** *You are seeing this because one of this repository's maintainers has
 configured [Lineage] to open pull requests.*

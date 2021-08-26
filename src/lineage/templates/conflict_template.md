@@ -56,7 +56,7 @@ that you must resolve before merging this pull request!
 
 1. Mark this draft pull request "Ready for review".
 
-------------
+---
 
 **Note:** *You are seeing this because one of this repository's maintainers has
 configured [Lineage] to open pull requests.*
