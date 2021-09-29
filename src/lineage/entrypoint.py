@@ -344,7 +344,7 @@ def main() -> None:
         remote_branch: Optional[str]
         remote_url: str
         if config.get("version") != "1":
-            logging.warning(f"Incompatible config version: {config['version']}")
+            logging.warning(f"Incompatible config version: {config.get('version')}")
             continue
         if "lineage" not in config:
             logging.warning("Could not find 'lineage' key in config.")
