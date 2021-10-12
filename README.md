@@ -38,7 +38,27 @@ lineage:
     remote-url: https://github.com/felddy/extra-skel-sauce.git
 ```
 
-## Sample GitHub Actions workflow ##
+## Usage ##
+
+### Inputs ###
+
+| Name | Description | Default | Required |
+| ---- | ----------- | ------- | :------: |
+| access_token | GitHub personal access token. | n/a | yes |
+| mask_non_public_repos | Control the visibility of private repo names in the logs. | `true` | no |
+| public_repos_only | Control non-public repository processing. | `true` | no |
+| repo_query | GitHub search query to find repositories for pull requests. | n/a | yes |
+
+### Outputs ###
+
+None.
+<!--
+| Name | Description |
+| ---- | ----------- |
+| output_name | The output's description. |
+-->
+
+### Sample GitHub Actions workflow ###
 
 The Lineage action requires a personal access token so that it may open pull
 requests.  For public repositories this token must have the `public_repo`
