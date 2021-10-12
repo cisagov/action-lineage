@@ -16,7 +16,7 @@ Lineage is configured using `.github/lineage.yml` in a repository.  Each
 upstream repository is listed in the `lineage` section.
 
 | Key | Description | Required |
-|-----|-------------|----------|
+|-----|-------------|:--------:|
 | local-branch | The branch that will receive new changes. | No |
 | remote-url   | The `https` URL of the upstream repository. | Yes |
 | remote-branch | The branch in the upstream repository. | No |
@@ -43,7 +43,7 @@ lineage:
 ### Inputs ###
 
 | Name | Description | Interpreted Type | Default | Required |
-| ---- | ----------- | ---------------- | ------- | :------: |
+|------|-------------|------------------|---------|:--------:|
 | access_token | GitHub personal access token (see [GitHub's documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)). | `string` | n/a | yes |
 | mask_non_public_repos | Control the visibility of private repo names in the logs. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
 | public_repos_only | Control non-public repository processing. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
@@ -54,7 +54,7 @@ lineage:
 None.
 <!--
 | Name | Description | Output Type |
-| ---- | ----------- | ----------- |
+|------|-------------|-------------|
 | output_name | The output's description. | `output_type` |
 -->
 
