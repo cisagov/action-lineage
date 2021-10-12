@@ -269,8 +269,11 @@ def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
 
 def main() -> None:
     """Parse environment and perform requested actions."""
-    # Set up logging
-    logging.basicConfig(format="%(levelname)s %(message)s", level="INFO")
+    # Set up logging. Force logging output to stdout to allow for GitHub Actions
+    # commands to interact with output.
+    logging.basicConfig(
+        format="%(levelname)s %(message)s", level=logging.INFO, stream=sys.stdout
+    )
 
     # Get inputs from the environment
     access_token: Optional[str] = core.get_input("access_token")
