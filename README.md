@@ -42,20 +42,20 @@ lineage:
 
 ### Inputs ###
 
-| Name | Description | Default | Required |
-| ---- | ----------- | ------- | :------: |
-| access_token | GitHub personal access token. | n/a | yes |
-| mask_non_public_repos | Control the visibility of private repo names in the logs. | `true` | no |
-| public_repos_only | Control non-public repository processing. | `true` | no |
-| repo_query | GitHub search query to find repositories for pull requests. | n/a | yes |
+| Name | Description | Interpreted Type | Default | Required |
+| ---- | ----------- | ---------------- | ------- | :------: |
+| access_token | GitHub personal access token. | `string` | n/a | yes |
+| mask_non_public_repos | Control the visibility of private repo names in the logs. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
+| public_repos_only | Control non-public repository processing. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
+| repo_query | GitHub search query to find repositories for pull requests. | `string` | n/a | yes |
 
 ### Outputs ###
 
 None.
 <!--
-| Name | Description |
-| ---- | ----------- |
-| output_name | The output's description. |
+| Name | Description | Output Type |
+| ---- | ----------- | ----------- |
+| output_name | The output's description. | `output_type` |
 -->
 
 ### Sample GitHub Actions workflow ###
