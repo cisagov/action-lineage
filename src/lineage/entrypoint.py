@@ -11,6 +11,7 @@ from typing import Generator, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
 # Third-Party Libraries
+from actions_toolkit import core
 import chevron
 from github import Github, PullRequest, Repository
 import pkg_resources
@@ -272,10 +273,10 @@ def main() -> None:
     logging.basicConfig(format="%(levelname)s %(message)s", level="INFO")
 
     # Get inputs from the environment
-    access_token: Optional[str] = os.environ.get("INPUT_ACCESS_TOKEN")
+    access_token: Optional[str] = core.get_input("access_token")
     github_actor: Optional[str] = os.environ.get("GITHUB_ACTOR")
     github_workspace_dir: Optional[str] = os.environ.get("GITHUB_WORKSPACE")
-    repo_query: Optional[str] = os.environ.get("INPUT_REPO_QUERY")
+    repo_query: Optional[str] = core.get_input("repo_query")
 
     # sanity checks
     if access_token is None:
