@@ -44,10 +44,10 @@ lineage:
 
 | Name | Description | Interpreted Type | Default | Required |
 | ---- | ----------- | ---------------- | ------- | :------: |
-| access_token | GitHub personal access token. | `string` | n/a | yes |
+| access_token | GitHub personal access token (see [GitHub's documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)). | `string` | n/a | yes |
 | mask_non_public_repos | Control the visibility of private repo names in the logs. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
 | public_repos_only | Control non-public repository processing. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
-| repo_query | GitHub search query to find repositories for pull requests. | `string` | n/a | yes |
+| repo_query | GitHub search query to find repositories for pull requests (e.g. "org:cisagov archived:false"). | `string` | n/a | yes |
 
 ### Outputs ###
 
