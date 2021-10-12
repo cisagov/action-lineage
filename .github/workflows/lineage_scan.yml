@@ -4,6 +4,7 @@ name: lineage_scan
 on:
   schedule:
     - cron: "15 * * * *"
+  workflow_dispatch:
 
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
