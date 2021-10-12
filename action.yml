@@ -10,6 +10,14 @@ inputs:
   access_token:
     description: "GitHub personal access token."
     required: true
+  mask_non_public_repos:
+    default: true
+    description: "Control the visibility of private repo names in the logs."
+    required: false
+  public_repos_only:
+    default: true
+    description: "Control non-public repository processing."
+    required: false
   repo_query:
     description: "GitHub search query to find repositories for pull requests."
     required: true
