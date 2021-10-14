@@ -281,7 +281,7 @@ def main() -> None:
     github_workspace_dir: Optional[str] = os.environ.get("GITHUB_WORKSPACE")
     mask_non_public: bool = core.get_boolean_input("mask_non_public_repos")
     repo_query: Optional[str] = core.get_input("repo_query")
-    public_only: bool = core.get_boolean_input("public_repos_only")
+    include_non_public: bool = core.get_boolean_input("include_non_public_repos")
 
     # sanity checks
     if access_token is None:
@@ -325,7 +325,7 @@ def main() -> None:
     for repo in repos:
         # Extra controls if the repo is private
         if repo.private:
-            if public_only:
+            if not include_non_public:
                 continue
             # Ensure that non-public repo names do not show up in the logs
             if mask_non_public:

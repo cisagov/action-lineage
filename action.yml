@@ -12,14 +12,17 @@ inputs:
     required: true
   mask_non_public_repos:
     default: true
-    description: "Control the visibility of private repo names in the logs."
+    description: "Whether to mask the names of non-public (`private` and
+      `internal`) repositories in the GitHub Actions logs."
     required: false
-  public_repos_only:
-    default: true
-    description: "Control non-public repository processing."
+  include_non_public_repos:
+    default: false
+    description: "Whether to process non-public (`private` and `internal`)
+      repositories."
     required: false
   repo_query:
-    description: "GitHub search query to find repositories for pull requests."
+    description: "GitHub search query to use when finding repositories for
+      which to create pull requests (e.g. \"org:cisagov archived:false\")."
     required: true
 runs:
   using: "docker"
