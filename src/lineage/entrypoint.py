@@ -354,9 +354,8 @@ def main() -> None:
         # https://github.com/cisagov/action-lineage/pull/33
         try:
             run([GIT, "clone", repo.clone_url, repo.full_name])
-        except Exception as err:
-            logging.warning("Unable to clone %s.", repo.full_name)
-            logging.warning(err)
+        except Exception:
+            logging.exception("Unable to clone %s.", repo.full_name)
             core.end_group()
             continue
         lineage_id: str
@@ -377,10 +376,8 @@ def main() -> None:
                 local_branch = v.get("local-branch")
                 remote_branch = v.get("remote-branch", "HEAD")
                 remote_url = v["remote-url"]
-            except KeyError as e:
-                logging.warning(
-                    "Missing config key while reading %s: %s", lineage_id, e
-                )
+            except KeyError:
+                logging.exception("Missing config key while reading %s: %s", lineage_id)
                 continue
             # if a local_branch is not specified use the repo default
             if not local_branch:
