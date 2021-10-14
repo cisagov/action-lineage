@@ -269,14 +269,19 @@ def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
 
 def main() -> None:
     """Parse environment and perform requested actions."""
-    # Set up logging
-    logging.basicConfig(format="%(levelname)s %(message)s", level="INFO")
+    # Set up logging. Force logging output to stdout to allow for GitHub Actions
+    # commands to interact with output.
+    logging.basicConfig(
+        format="%(levelname)s %(message)s", level=logging.INFO, stream=sys.stdout
+    )
 
     # Get inputs from the environment
     access_token: Optional[str] = core.get_input("access_token")
     github_actor: Optional[str] = os.environ.get("GITHUB_ACTOR")
     github_workspace_dir: Optional[str] = os.environ.get("GITHUB_WORKSPACE")
+    mask_non_public: bool = core.get_boolean_input("mask_non_public_repos")
     repo_query: Optional[str] = core.get_input("repo_query")
+    include_non_public: bool = core.get_boolean_input("include_non_public_repos")
 
     # sanity checks
     if access_token is None:
@@ -318,6 +323,13 @@ def main() -> None:
 
     repos = get_repo_list(g, repo_query)
     for repo in repos:
+        # Extra controls if the repo is private
+        if repo.private:
+            if not include_non_public:
+                continue
+            # Ensure that non-public repo names do not show up in the logs
+            if mask_non_public:
+                core.set_secret(repo.full_name)
         logging.info(f"Checking: {repo.full_name}")
         config = get_config(repo)
         if not config:

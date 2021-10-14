@@ -16,7 +16,7 @@ Lineage is configured using `.github/lineage.yml` in a repository.  Each
 upstream repository is listed in the `lineage` section.
 
 | Key | Description | Required |
-|-----|-------------|----------|
+|-----|-------------|:--------:|
 | local-branch | The branch that will receive new changes. | No |
 | remote-url   | The `https` URL of the upstream repository. | Yes |
 | remote-branch | The branch in the upstream repository. | No |
@@ -38,7 +38,27 @@ lineage:
     remote-url: https://github.com/felddy/extra-skel-sauce.git
 ```
 
-## Sample GitHub Actions workflow ##
+## Usage ##
+
+### Inputs ###
+
+| Name | Description | Interpreted Type | Default | Required |
+|------|-------------|------------------|---------|:--------:|
+| access_token | GitHub personal access token (see [GitHub's documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)). | `string` | n/a | yes |
+| mask_non_public_repos | Whether to mask the names of non-public (`private` and `internal`) repositories in the GitHub Actions logs. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
+| include_non_public_repos | Whether to process non-public (`private` and `internal`) repositories. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `false` | no |
+| repo_query | GitHub search query to use when finding repositories for which to create pull requests (e.g. \"org:cisagov archived:false\"). | `string` | n/a | yes |
+
+### Outputs ###
+
+None.
+<!--
+| Name | Description | Output Type |
+|------|-------------|-------------|
+| output_name | The output's description. | `output_type` |
+-->
+
+### Sample GitHub Actions workflow ###
 
 The Lineage action requires a personal access token so that it may open pull
 requests.  For public repositories this token must have the `public_repo`
