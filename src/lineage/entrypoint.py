@@ -44,8 +44,8 @@ def run(
 ) -> subprocess.CompletedProcess:
     """Run a command and display its output and return code."""
     if comment:
-        logging.info(f"💬 {comment}")
-    logging.debug(f"➤  {cmd}")
+        logging.info("💬 %s", comment)
+    logging.debug("➤  %s", cmd)
     proc = subprocess.run(
         cmd,
         shell=False,  # nosec
@@ -58,13 +58,13 @@ def run(
         logging.info("✅ success")
     elif on_error == OnError.OK:
         logging.debug(proc.stdout.decode())
-        logging.info(f"✅ (error ok) return code: {proc.returncode}")
+        logging.info("✅ (error ok) return code: %d", proc.returncode)
     elif on_error == OnError.WARN:
         logging.warning(proc.stdout.decode())
-        logging.warning(f"⚠️ WARNING! return code: {proc.returncode}")
+        logging.warning("⚠️ WARNING! return code: %d", proc.returncode)
     else:  # OnError.FAIL
         logging.fatal(proc.stdout.decode())
-        logging.fatal(f"❌ ERROR! return code: {proc.returncode}")
+        logging.fatal("❌ ERROR! return code: %d", proc.returncode)
         raise Exception("Subprocess was expected to exit with 0.")
     return proc
 
@@ -74,11 +74,11 @@ def load_template(github_workspace_dir, default_filename, custom_filename=None):
     template_data: str
     if custom_filename:
         template_path: Path = Path(github_workspace_dir) / Path(custom_filename)
-        logging.info(f"Loading template file: {template_path}")
+        logging.info("Loading template file: %s", template_path)
         with template_path.open() as f:
             template_data: str = f.read()
     else:
-        logging.info(f"Loading default template: {default_filename}")
+        logging.info("Loading default template: %s", default_filename)
         template_data = (
             pkg_resources.resource_string("lineage", f"templates/{default_filename}")
             .decode("utf-8")
@@ -91,7 +91,7 @@ def get_repo_list(
     g: Github, repo_query: str
 ) -> Generator[Repository.Repository, None, None]:
     """Generate a list of repositories based on the query."""
-    logging.info(f"Querying for repositories: {repo_query}")
+    logging.info("Querying for repositories: %s", repo_query)
     # Sometimes there is an issue with the pagination of results from the
     # call to `Github.search_repositories()` that causes repositories on page
     # breaks to be duplicated when iterating over results. The only issue I could
@@ -110,7 +110,7 @@ def get_repo_list(
 def get_config(repo: Repository.Repository) -> Optional[dict]:
     """Read the lineage configuration for this repo without checking it out."""
     config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CONFIG_FILENAME}"
-    logging.debug(f"Checking for config at: {config_url}")
+    logging.debug("Checking for config at: %s", config_url)
     response = requests.get(config_url)
     if response.status_code == 200:
         return yaml.safe_load(response.content)
@@ -123,17 +123,19 @@ def switch_branch(
 ) -> Tuple[str, bool]:
     """Switch to the PR branch, and possibly create it."""
     branch_name = f"lineage/{lineage_id}"
-    logging.info(f"Attempting to switch to branch: {branch_name}")
+    logging.info("Attempting to switch to branch: %s", branch_name)
     proc = run([GIT, "switch", branch_name], cwd=repo.full_name, on_error=OnError.OK)
     if proc.returncode:
         # branch does not exist, create it
         logging.info(
-            f"Branch did not exist.  Creating: {branch_name} from local {local_branch}"
+            "Branch did not exist.  Creating: %s from local %s",
+            branch_name,
+            local_branch,
         )
-        logging.info(f"Creating branch {branch_name} from {local_branch}")
+        logging.info("Creating branch %s from %s", branch_name, local_branch)
         # ignore typing on local_branch, it is has been set above if None
         run([GIT, "branch", branch_name, local_branch], cwd=repo.full_name)  # type: ignore
-        logging.info(f"Switching to {branch_name}")
+        logging.info("Switching to %s", branch_name)
         run([GIT, "switch", branch_name], cwd=repo.full_name)
         return branch_name, True  # branch is new
     else:
@@ -143,19 +145,19 @@ def switch_branch(
 def fetch(repo: Repository.Repository, remote_url: str, remote_branch: Optional[str]):
     """Fetch commits from remote branch."""
     if remote_branch:
-        logging.info(f"Fetching {remote_url} {remote_branch}")
+        logging.info("Fetching %s %s", remote_url, remote_branch)
         run([GIT, "fetch", remote_url, remote_branch], cwd=repo.full_name)
     else:
-        logging.info(f"Fetching {remote_url}")
+        logging.info("Fetching %s", remote_url)
         run([GIT, "fetch", remote_url], cwd=repo.full_name)
 
 
 def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[str]]:
     """Merge previously fetched commits."""
     conflict_file_list: List[str] = []
-    logging.debug(f"Setting git user.name {github_actor}")
+    logging.debug("Setting git user.name %s", github_actor)
     proc = run([GIT, "config", "user.name", github_actor], cwd=repo.full_name)
-    logging.debug(f"Setting git user.email {github_actor}@github.com")
+    logging.debug("Setting git user.email %s@github.com", github_actor)
     proc = run(
         [GIT, "config", "user.email", f"{github_actor}@github.com"],
         cwd=repo.full_name,
@@ -180,7 +182,7 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
         logging.info("Adding conflicts into branch for later resolution.")
         run([GIT, "add", "."], cwd=repo.full_name)
     # Make sure a modification to the lineage configuration is not in the FETCH_HEAD
-    logging.info(f"Remove any incoming modifications to {CONFIG_FILENAME}")
+    logging.info("Remove any incoming modifications to %s", CONFIG_FILENAME)
     run(
         [GIT, "reset", "HEAD", "--", CONFIG_FILENAME],
         cwd=repo.full_name,
@@ -200,7 +202,9 @@ def push(
     """Push changes to remote."""
     if not repo.permissions.push:
         logging.warning(
-            f"⚠️ WARNING! Missing 'push' permission on '{repo.owner.login}/{repo.name}'"
+            "⚠️ WARNING! Missing 'push' permission on '%s/%s'",
+            repo.owner.login,
+            repo.name,
         )
         return False
     else:
@@ -210,7 +214,7 @@ def push(
         ).geturl()
         logging.info("Assigning credentials for push.")
         run([GIT, "remote", "set-url", "origin", cred_url], cwd=repo.full_name)
-        logging.info(f"Pushing {branch_name} to remote.")
+        logging.info("Pushing %s to remote.", branch_name)
         run([GIT, "push", "--set-upstream", "origin", branch_name], cwd=repo.full_name)
         return True
 
@@ -224,13 +228,13 @@ def create_pull_request(
     draft: bool,
 ):
     """Create a pull request."""
-    logging.info(f"Creating a new pull request in {repo.full_name}")
+    logging.info("Creating a new pull request in %s", repo.full_name)
     pull_request: PullRequest.PullRequest = repo.create_pull(
         title=title, head=pr_branch_name, base=local_branch, body=body, draft=draft
     )
     # Assign code owners to pull request
     for owner in get_code_owners(repo):
-        logging.info(f"Assigning code owner {owner} to pull request.")
+        logging.info("Assigning code owner %s to pull request.", owner)
         pull_request.add_to_assignees(owner)
 
     # Build a list of labels to add from the labels available in the repository
@@ -245,7 +249,7 @@ def create_pull_request(
 def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
     """Get the code owners for this repo."""
     config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CODEOWNERS_FILENAME}"
-    logging.debug(f"Checking for code owners at: {config_url}")
+    logging.debug("Checking for code owners at: %s", config_url)
     response = requests.get(config_url)
     if response.status_code == 200:
         lines = response.content.decode().split("\n")
@@ -331,14 +335,14 @@ def main() -> None:
             if mask_non_public:
                 core.set_secret(repo.full_name)
         core.start_group(repo.full_name)
-        logging.info(f"Checking: {repo.full_name}")
+        logging.info("Checking: %s", repo.full_name)
         config = get_config(repo)
         if not config:
-            logging.info(f"Lineage configuration not found for {repo.full_name}")
+            logging.info("Lineage configuration not found for %s", repo.full_name)
             core.end_group()
             continue
-        logging.info(f"Lineage configuration found for {repo.full_name}")
-        logging.info(f"Cloning repository: {repo.clone_url}")
+        logging.info("Lineage configuration found for %s", repo.full_name)
+        logging.info("Cloning repository: %s", repo.clone_url)
         # The failure of a repository to clone should not cause the entire
         # run to fail. See related comment above in the body of the
         # get_repo_list() function for an example of such a case which caused an
@@ -360,7 +364,7 @@ def main() -> None:
         remote_branch: Optional[str]
         remote_url: str
         if config.get("version") != "1":
-            logging.warning(f"Incompatible config version: {config.get('version')}")
+            logging.warning("Incompatible config version: %s", config.get("version"))
             core.end_group()
             continue
         if "lineage" not in config:
@@ -368,33 +372,35 @@ def main() -> None:
             core.end_group()
             continue
         for lineage_id, v in config["lineage"].items():
-            logging.info(f"Processing lineage: {lineage_id}")
+            logging.info("Processing lineage: %s", lineage_id)
             try:
                 local_branch = v.get("local-branch")
                 remote_branch = v.get("remote-branch", "HEAD")
                 remote_url = v["remote-url"]
             except KeyError as e:
-                logging.warning(f"Missing config key while reading {lineage_id}: {e}")
+                logging.warning(
+                    "Missing config key while reading %s: %s", lineage_id, e
+                )
                 continue
             # if a local_branch is not specified use the repo default
             if not local_branch:
                 local_branch = repo.default_branch
 
-            logging.info(f"Upstream: {remote_url} {remote_branch or ''}")
+            logging.info("Upstream: %s %s", remote_url, remote_branch or "")
             # Check to see if a PR branch already exists
             branch_is_new: bool
             branch_name: str
             pr_branch_name, branch_is_new = switch_branch(
                 repo, lineage_id, local_branch
             )
-            logging.info(f"Pull request branch is new: {branch_is_new}")
+            logging.info("Pull request branch is new: %s", branch_is_new)
             fetch(repo, remote_url, remote_branch)
             changed: bool
             conflict_file_list: List[str]
             changed, conflict_file_list = merge(repo, github_actor)
             if not changed:
                 logging.info(
-                    f"Already up to date with: {remote_url} {remote_branch or ''} "
+                    "Already up to date with: %s %s", remote_url, remote_branch or ""
                 )
                 continue
             # If we can successfully push, continue with generating a PR
