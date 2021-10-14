@@ -330,10 +330,12 @@ def main() -> None:
             # Ensure that non-public repo names do not show up in the logs
             if mask_non_public:
                 core.set_secret(repo.full_name)
+        core.start_group(repo.full_name)
         logging.info(f"Checking: {repo.full_name}")
         config = get_config(repo)
         if not config:
             logging.info(f"Lineage configuration not found for {repo.full_name}")
+            core.end_group()
             continue
         logging.info(f"Lineage configuration found for {repo.full_name}")
         logging.info(f"Cloning repository: {repo.clone_url}")
@@ -351,6 +353,7 @@ def main() -> None:
         except Exception as err:
             logging.warning("Unable to clone %s.", repo.full_name)
             logging.warning(err)
+            core.end_group()
             continue
         lineage_id: str
         local_branch: str
@@ -358,9 +361,11 @@ def main() -> None:
         remote_url: str
         if config.get("version") != "1":
             logging.warning(f"Incompatible config version: {config.get('version')}")
+            core.end_group()
             continue
         if "lineage" not in config:
             logging.warning("Could not find 'lineage' key in config.")
+            core.end_group()
             continue
         for lineage_id, v in config["lineage"].items():
             logging.info(f"Processing lineage: {lineage_id}")
@@ -427,5 +432,6 @@ def main() -> None:
                 logging.warning(
                     "Not creating a new pull request because of insufficient permissions."
                 )
+        core.end_group()
 
     logging.info("Completed.")
