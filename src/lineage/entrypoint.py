@@ -206,6 +206,10 @@ def push(
             repo.owner.login,
             repo.name,
         )
+        core.warning(
+            "Missing 'push' permission.",
+            title=base_message % (repo.owner.login, repo.name),
+        )
         return False
     else:
         parts: ParseResult = urlparse(repo.clone_url)
@@ -363,11 +367,18 @@ def main() -> None:
         remote_branch: Optional[str]
         remote_url: str
         if config.get("version") != "1":
-            logging.warning("Incompatible config version: %s", config.get("version"))
+            base_message = "Incompatible config version: %s"
+            logging.warning(base_message, config.get("version"))
+            core.warning(
+                base_message % config.get("version"),
+                title=repo.full_name,
+            )
             core.end_group()
             continue
         if "lineage" not in config:
-            logging.warning("Could not find 'lineage' key in config.")
+            base_message = "Could not find 'lineage' key in config."
+            logging.warning(base_message)
+            core.warning(base_message, title=repo.full_name)
             core.end_group()
             continue
         for lineage_id, v in config["lineage"].items():
