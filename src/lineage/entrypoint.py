@@ -171,6 +171,7 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
     conflict: bool = proc.returncode != 0
     if UNRELATED_HISTORY in proc.stdout.decode():
         logging.warning("Repository lineage is incorrect.  Merge refused.")
+        core.warning("Repository lineage is incorrect.", title=repo.full_name)
         return False, conflict_file_list
     if ALREADY_UP_TO_DATE in proc.stdout.decode():
         logging.info("Branch is already up to date.")
