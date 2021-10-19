@@ -203,7 +203,7 @@ def push(
     """Push changes to remote."""
     if not repo.permissions.push:
         logging.warning(
-            "⚠️ WARNING! Missing 'push' permission on '%s/%s'",
+            "⚠️ WARNING! Missing 'push' permission on '%s'",
             repo.full_name,
         )
         core.warning(
