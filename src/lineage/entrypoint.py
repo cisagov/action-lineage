@@ -319,7 +319,7 @@ def main() -> None:
 
     if repo_query is None:
         logging.fatal(
-            "Reository query environment variable must be set. (INPUT_REPO_QUERY)"
+            "Repository query environment variable must be set. (INPUT_REPO_QUERY)"
         )
         core.error("Missing required input: repo_query", title="Initialization error")
         sys.exit(-1)
