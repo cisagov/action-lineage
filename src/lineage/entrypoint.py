@@ -204,12 +204,11 @@ def push(
     if not repo.permissions.push:
         logging.warning(
             "⚠️ WARNING! Missing 'push' permission on '%s/%s'",
-            repo.owner.login,
-            repo.name,
+            repo.full_name,
         )
         core.warning(
             "Missing 'push' permission.",
-            title=base_message % (repo.owner.login, repo.name),
+            title=repo.full_name,
         )
         return False
     else:
