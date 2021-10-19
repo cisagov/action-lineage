@@ -171,6 +171,7 @@ def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[st
     conflict: bool = proc.returncode != 0
     if UNRELATED_HISTORY in proc.stdout.decode():
         logging.warning("Repository lineage is incorrect.  Merge refused.")
+        core.warning("Repository lineage is incorrect.", title=repo.full_name)
         return False, conflict_file_list
     if ALREADY_UP_TO_DATE in proc.stdout.decode():
         logging.info("Branch is already up to date.")
@@ -202,9 +203,12 @@ def push(
     """Push changes to remote."""
     if not repo.permissions.push:
         logging.warning(
-            "⚠️ WARNING! Missing 'push' permission on '%s/%s'",
-            repo.owner.login,
-            repo.name,
+            "⚠️ WARNING! Missing 'push' permission on '%s'",
+            repo.full_name,
+        )
+        core.warning(
+            "Missing 'push' permission.",
+            title=repo.full_name,
         )
         return False
     else:
@@ -292,22 +296,32 @@ def main() -> None:
         logging.fatal(
             "Access token environment variable must be set. (INPUT_ACCESS_TOKEN)"
         )
+        core.error("Missing required input: access_token", title="Initialization error")
         sys.exit(-1)
 
     if github_actor is None:
         logging.fatal("GitHub actor environment variable must be set. (GITHUB_ACTOR)")
+        core.error(
+            "GitHub actor environment variable must be set. (GITHUB_ACTOR)",
+            title="Initialization error",
+        )
         sys.exit(-1)
 
     if github_workspace_dir is None:
         logging.fatal(
             "GitHub workspace environment variable must be set. (GITHUB_WORKSPACE)"
         )
+        core.error(
+            "GitHub workspace environment variable must be set. (GITHUB_WORKSPACE)",
+            title="Initialization error",
+        )
         sys.exit(-1)
 
     if repo_query is None:
         logging.fatal(
-            "Reository query environment variable must be set. (INPUT_REPO_QUERY)"
+            "Repository query environment variable must be set. (INPUT_REPO_QUERY)"
         )
+        core.error("Missing required input: repo_query", title="Initialization error")
         sys.exit(-1)
 
     # Ensure we are working in our workspace
@@ -363,11 +377,18 @@ def main() -> None:
         remote_branch: Optional[str]
         remote_url: str
         if config.get("version") != "1":
-            logging.warning("Incompatible config version: %s", config.get("version"))
+            base_message = "Incompatible config version: %s"
+            logging.warning(base_message, config.get("version"))
+            core.warning(
+                base_message % config.get("version"),
+                title=repo.full_name,
+            )
             core.end_group()
             continue
         if "lineage" not in config:
-            logging.warning("Could not find 'lineage' key in config.")
+            base_message = "Could not find 'lineage' key in config."
+            logging.warning(base_message)
+            core.warning(base_message, title=repo.full_name)
             core.end_group()
             continue
         for lineage_id, v in config["lineage"].items():
