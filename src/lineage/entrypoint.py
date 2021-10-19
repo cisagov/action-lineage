@@ -296,15 +296,24 @@ def main() -> None:
         logging.fatal(
             "Access token environment variable must be set. (INPUT_ACCESS_TOKEN)"
         )
+        core.error("Missing required input: access_token", title="Initialization error")
         sys.exit(-1)
 
     if github_actor is None:
         logging.fatal("GitHub actor environment variable must be set. (GITHUB_ACTOR)")
+        core.error(
+            "GitHub actor environment variable must be set. (GITHUB_ACTOR)",
+            title="Initialization error",
+        )
         sys.exit(-1)
 
     if github_workspace_dir is None:
         logging.fatal(
             "GitHub workspace environment variable must be set. (GITHUB_WORKSPACE)"
+        )
+        core.error(
+            "GitHub workspace environment variable must be set. (GITHUB_WORKSPACE)",
+            title="Initialization error",
         )
         sys.exit(-1)
 
@@ -312,6 +321,7 @@ def main() -> None:
         logging.fatal(
             "Reository query environment variable must be set. (INPUT_REPO_QUERY)"
         )
+        core.error("Missing required input: repo_query", title="Initialization error")
         sys.exit(-1)
 
     # Ensure we are working in our workspace
