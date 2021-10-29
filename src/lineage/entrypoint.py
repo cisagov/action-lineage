@@ -422,7 +422,7 @@ def main() -> None:
                 repo, lineage_id, local_branch
             )
             logging.info("Pull request branch is new: %s", branch_is_new)
-            # Check if a PR exists if the branch already exists
+            # If the branch already exists, then check if a PR exists
             if not branch_is_new and not has_existing_pr(repo, pr_branch_name):
                 core.warning(
                     "There is no Pull Request for the existing Lineage branch.",
