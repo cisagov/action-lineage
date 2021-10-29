@@ -275,6 +275,16 @@ def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
             break
 
 
+def has_existing_pr(repo: Repository.Repository, branch_name: str) -> bool:
+    """Check if an open PR already exists for the lineage branch."""
+    # By default only open Pull Requests are returned
+    pull_requests = repo.get_pulls()
+    for pr in pull_requests:
+        if pr.head.ref == branch_name:
+            return True
+    return False
+
+
 def main() -> None:
     """Parse environment and perform requested actions."""
     # Set up logging. Force logging output to stdout to allow for GitHub Actions
@@ -412,6 +422,12 @@ def main() -> None:
                 repo, lineage_id, local_branch
             )
             logging.info("Pull request branch is new: %s", branch_is_new)
+            # If the branch already exists, then check if a PR exists
+            if not branch_is_new and not has_existing_pr(repo, pr_branch_name):
+                core.warning(
+                    "There is no pull request for the existing Lineage branch.",
+                    title=repo.full_name,
+                )
             fetch(repo, remote_url, remote_branch)
             changed: bool
             conflict_file_list: List[str]
