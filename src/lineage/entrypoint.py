@@ -425,7 +425,7 @@ def main() -> None:
             # If the branch already exists, then check if a PR exists
             if not branch_is_new and not has_existing_pr(repo, pr_branch_name):
                 core.warning(
-                    "There is no Pull Request for the existing Lineage branch.",
+                    "There is no pull request for the existing Lineage branch.",
                     title=repo.full_name,
                 )
             fetch(repo, remote_url, remote_branch)
