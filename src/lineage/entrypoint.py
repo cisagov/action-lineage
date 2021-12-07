@@ -14,6 +14,7 @@ from urllib.parse import ParseResult, urlparse
 from actions_toolkit import core
 import chevron
 from github import Github, PullRequest, Repository
+from github.GithubException import GithubException
 import pkg_resources
 import requests
 import yaml
@@ -109,12 +110,25 @@ def get_repo_list(
 
 def get_config(repo: Repository.Repository) -> Optional[dict]:
     """Read the lineage configuration for this repo without checking it out."""
-    config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CONFIG_FILENAME}"
-    logging.debug("Checking for config at: %s", config_url)
-    response = requests.get(config_url)
-    if response.status_code == 200:
-        return yaml.safe_load(response.content)
-    else:
+    try:
+        logging.debug(
+            "Checking for config at: %s/%s/%s",
+            repo.full_name,
+            repo.default_branch,
+            CONFIG_FILENAME,
+        )
+        config_file = repo.get_contents(CONFIG_FILENAME, ref=repo.default_branch)
+        if type(config_file) is list:
+            logging.warning(
+                "Expected a Lineage configuration file but got a directory in %s",
+                repo.full_name,
+            )
+            core.warning(
+                "Lineage configuration path is a directory", title=repo.full_name
+            )
+            return None
+        return yaml.safe_load(config_file.decoded_content)
+    except GithubException:
         return None
 
 
