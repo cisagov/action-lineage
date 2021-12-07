@@ -266,11 +266,21 @@ def create_pull_request(
 
 def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
     """Get the code owners for this repo."""
-    config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CODEOWNERS_FILENAME}"
-    logging.debug("Checking for code owners at: %s", config_url)
-    response = requests.get(config_url)
-    if response.status_code == 200:
-        lines = response.content.decode().split("\n")
+    try:
+        logging.debug(
+            "Checking for code owners at: %s/%s/%s",
+            repo.full_name,
+            repo.default_branch,
+            CODEOWNERS_FILENAME,
+        )
+        config_file = repo.get_contents(CODEOWNERS_FILENAME, ref=repo.default_branch)
+        if type(config_file) is list:
+            logging.warning(
+                "Expected a code owners file but got a directory in %s", repo.full_name
+            )
+            core.warning("Code owners path is a directory", title=repo.full_name)
+            return
+        lines = config_file.decoded_content.split("\n")
         for line in lines:
             if not line.strip() or line.startswith("#"):
                 # skip comments and empty lines
@@ -287,6 +297,8 @@ def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
                 yield item[1:]
             # Only process the first line with content
             break
+    except GithubException:
+        logging.info("Unable to retrieve code owners for %s", repo.full_name)
 
 
 def has_existing_pr(repo: Repository.Repository, branch_name: str) -> bool:
