@@ -399,7 +399,7 @@ def main() -> None:
         try:
             parts: ParseResult = urlparse(repo.clone_url)
             cred_url = parts._replace(
-                netloc=f"git:{access_token}@{parts.netloc}"
+                netloc=f"git:{access_token}@{parts.netloc}", scheme="https"
             ).geturl()
             run([GIT, "clone", cred_url, repo.full_name])
         except Exception:
