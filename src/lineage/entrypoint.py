@@ -226,12 +226,6 @@ def push(
         )
         return False
     else:
-        parts: ParseResult = urlparse(repo.clone_url)
-        cred_url = parts._replace(
-            netloc=f"{username}:{password}@{parts.netloc}"
-        ).geturl()
-        logging.info("Assigning credentials for push.")
-        run([GIT, "remote", "set-url", "origin", cred_url], cwd=repo.full_name)
         logging.info("Pushing %s to remote.", branch_name)
         run([GIT, "push", "--set-upstream", "origin", branch_name], cwd=repo.full_name)
         return True
@@ -403,7 +397,11 @@ def main() -> None:
         # See also pull request #33 in this repository:
         # https://github.com/cisagov/action-lineage/pull/33
         try:
-            run([GIT, "clone", repo.clone_url, repo.full_name])
+            parts: ParseResult = urlparse(repo.clone_url)
+            cred_url = parts._replace(
+                netloc=f"git:{access_token}@{parts.netloc}"
+            ).geturl()
+            run([GIT, "clone", cred_url, repo.full_name])
         except Exception:
             logging.exception("Unable to clone %s.", repo.full_name)
             core.end_group()
