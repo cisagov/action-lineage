@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check all organization repositories
-        uses: cisagov/action-lineage@develop
+        uses: cisagov/action-lineage@improvement/clone_using_pat
         with:
           access_token: ${{ env.ACCESS_TOKEN }}
           repo_query: "org:cisagov archived:false"
