@@ -2,7 +2,7 @@ ARG GIT_COMMIT=unspecified
 ARG GIT_REMOTE=unspecified
 ARG VERSION=unspecified
 
-FROM python:alpine
+FROM python:3.10-alpine
 
 ARG GIT_COMMIT
 ARG GIT_REMOTE
