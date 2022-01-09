@@ -18,5 +18,6 @@ LABEL org.opencontainers.image.version=${VERSION}
 
 COPY . ./
 RUN apk add --no-cache build-base git libffi-dev
-RUN pip install --requirement requirements.txt
+RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel
+RUN pip install --no-cache-dir --requirement requirements.txt
 ENTRYPOINT ["python3", "-m", "lineage"]
