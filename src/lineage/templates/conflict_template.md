@@ -43,7 +43,7 @@ that you must resolve before merging this pull request!
     git push --force --set-upstream origin {{ pr_branch_name }}
     ```
 
-    Note that you may _append_ to the default merge commit message
+    Note that you may *append* to the default merge commit message
     that git creates for you, but *please do not delete the existing
     content*.  It provides useful information about the merge that is
     being performed.
