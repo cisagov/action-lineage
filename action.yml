@@ -11,12 +11,12 @@ inputs:
     description: "GitHub personal access token."
     required: true
   mask_non_public_repos:
-    default: true
+    default: "true"
     description: "Whether to mask the names of non-public (`private` and
       `internal`) repositories in the GitHub Actions logs."
     required: false
   include_non_public_repos:
-    default: false
+    default: "false"
     description: "Whether to process non-public (`private` and `internal`)
       repositories."
     required: false
