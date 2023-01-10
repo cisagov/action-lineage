@@ -103,8 +103,7 @@ def get_repo_list(
     # See also pull request #33 in this repository:
     # https://github.com/cisagov/action-lineage/pull/33
     matching_repos = g.search_repositories(query=repo_query, sort="updated")
-    for repo in matching_repos:
-        yield repo
+    yield from matching_repos
 
 
 def get_config(repo: Repository.Repository) -> Optional[dict]:
