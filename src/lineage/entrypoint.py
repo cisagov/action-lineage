@@ -416,7 +416,7 @@ def main() -> None:
             logging.info("Upstream: %s %s", remote_url, remote_branch or "")
             # Check to see if a PR branch already exists
             branch_is_new: bool
-            branch_name: str
+            pr_branch_name: str
             pr_branch_name, branch_is_new = switch_branch(
                 repo, lineage_id, local_branch
             )
