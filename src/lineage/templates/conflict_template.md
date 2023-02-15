@@ -50,7 +50,11 @@ that you must resolve before merging this pull request!
 
 1. Wait for all the automated tests to pass.
 
-1. Check the "Everything is cool" checkbox below.
+1. Confirm each item in the "Pre-approval checklist" below.
+
+1. Remove any of the checklist items that do not apply.
+
+1. Ensure every remaining checkbox has been checked.
 
 1. Mark this draft pull request "Ready for review".
 
