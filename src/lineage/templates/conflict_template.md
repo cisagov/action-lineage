@@ -60,10 +60,8 @@ that you must resolve before merging this pull request!
 
 ## ✅ Pre-approval checklist ##
 
-<!-- Remove any of the following that do not apply. -->
-<!-- Draft PRs should have one or more unchecked boxes. -->
-<!-- If you're unsure about any of these, don't hesitate to ask. -->
-<!-- We're here to help! -->
+- Remove any of the following that do not apply.
+- If you're unsure about any of these, don't hesitate to ask. We're here to help!
 
 - [ ] ✌️ The conflicts in this pull request have been resolved.
 - [ ] Changes are limited to a single goal - *eschew scope creep!*
@@ -79,16 +77,15 @@ that you must resolve before merging this pull request!
 
 ## ✅ Pre-merge checklist ##
 
-<!-- Remove any of the following that do not apply. -->
-<!-- These boxes should remain unchecked until the pull request has been -->
-<!-- approved. -->
+- Remove any of the following that do not apply.
+- These boxes should remain unchecked until the pull request has been approved.
 
 - [ ] Bump version via the `bump_version.sh` script, if this
       repository is versioned.
 
 ## ✅ Post-merge checklist ##
 
-<!-- Remove any of the following that do not apply. -->
+- Remove any of the following that do not apply.
 
 - [ ] Create a release.
 
