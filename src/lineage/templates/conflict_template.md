@@ -50,11 +50,43 @@ that you must resolve before merging this pull request!
 
 1. Wait for all the automated tests to pass.
 
-1. Check the "Everything is cool" checkbox below:
-
-    - [ ] ✌️ The conflicts in this pull request have been resolved.
+1. Check the "Everything is cool" checkbox below.
 
 1. Mark this draft pull request "Ready for review".
+
+## ✅ Pre-approval checklist ##
+
+<!-- Remove any of the following that do not apply. -->
+<!-- Draft PRs should have one or more unchecked boxes. -->
+<!-- If you're unsure about any of these, don't hesitate to ask. -->
+<!-- We're here to help! -->
+
+- [ ] ✌️ The conflicts in this pull request have been resolved.
+- [ ] Changes are limited to a single goal - *eschew scope creep!*
+- [ ] *All* future TODOs are captured in issues, which are referenced
+      in code comments.
+- [ ] All relevant type-of-change labels have been added.
+- [ ] I have read the [CONTRIBUTING](../blob/develop/CONTRIBUTING.md) document.
+- [ ] These code changes follow [cisagov code standards](https://github.com/cisagov/development-guide).
+- [ ] All relevant repo and/or project documentation has been updated
+      to reflect the changes in this PR.
+- [ ] Tests have been added and/or modified to cover the changes in this PR.
+- [ ] All new and existing tests pass.
+
+## ✅ Pre-merge checklist ##
+
+<!-- Remove any of the following that do not apply. -->
+<!-- These boxes should remain unchecked until the pull request has been -->
+<!-- approved. -->
+
+- [ ] Bump version via the `bump_version.sh` script, if this
+      repository is versioned.
+
+## ✅ Post-merge checklist ##
+
+<!-- Remove any of the following that do not apply. -->
+
+- [ ] Create a release.
 
 ---
 
