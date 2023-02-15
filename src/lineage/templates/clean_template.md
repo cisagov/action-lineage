@@ -16,7 +16,6 @@ your project.
 <!-- If you're unsure about any of these, don't hesitate to ask. -->
 <!-- We're here to help! -->
 
-- [ ] ✌️ The conflicts in this pull request have been resolved.
 - [ ] Changes are limited to a single goal - *eschew scope creep!*
 - [ ] *All* future TODOs are captured in issues, which are referenced
       in code comments.
