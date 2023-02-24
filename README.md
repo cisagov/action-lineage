@@ -42,7 +42,8 @@ lineage:
 If you are a [cisagov] repository maintainer and wish for your repository to
 receive Lineage updates you must do the following:
 
-1. Ensure your project is properly based on a [Skeleton repository](https://github.com/cisagov/development-guide/blob/develop/project_setup/skeleton-list.md)
+1. Ensure your project is based on a publicly accessible parent repository
+   (such as a [`cisagov` skeleton repository](https://github.com/cisagov/development-guide/blob/develop/project_setup/skeleton-list.md))
 1. Provide [`write`](https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/repository-roles-for-an-organization#repository-roles-for-organizations)
    access to [@cisagovbot](https://github.com/cisagovbot) or [@cisagov/team-ois](https://github.com/orgs/cisagov/teams/team-ois)
 
