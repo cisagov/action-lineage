@@ -14,12 +14,9 @@ your project.
 - Remove any of the following that do not apply.
 - If you're unsure about any of these, don't hesitate to ask. We're here to help!
 
-- [ ] Changes are limited to a single goal - *eschew scope creep!*
 - [ ] *All* future TODOs are captured in issues, which are referenced
       in code comments.
 - [ ] All relevant type-of-change labels have been added.
-- [ ] I have read the [CONTRIBUTING](../blob/develop/CONTRIBUTING.md) document.
-- [ ] These code changes follow [cisagov code standards](https://github.com/cisagov/development-guide).
 - [ ] All relevant repo and/or project documentation has been updated
       to reflect the changes in this PR.
 - [ ] Tests have been added and/or modified to cover the changes in this PR.
