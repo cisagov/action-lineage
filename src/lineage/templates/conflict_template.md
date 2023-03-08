@@ -77,8 +77,11 @@ that you must resolve before merging this pull request!
 - Remove any of the following that do not apply.
 - These boxes should remain unchecked until the pull request has been approved.
 
-- [ ] Bump version via the `bump_version.sh` script, if this
-      repository is versioned.
+- [ ] Bump major, minor, patch, or pre-release version [as
+      appropriate](https://semver.org/#semantic-versioning-specification-semver)
+      via the `bump_version.sh` script *if* this repository is
+      versioned *and* the changes in this PR [warrant a version
+      bump](https://semver.org/#what-should-i-do-if-i-update-my-own-dependencies-without-changing-the-public-api).
 
 ## ✅ Post-merge checklist ##
 
