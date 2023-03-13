@@ -60,8 +60,8 @@ that you must resolve before merging this pull request!
 
 ## ✅ Pre-approval checklist ##
 
-- Remove any of the following that do not apply.
-- If you're unsure about any of these, don't hesitate to ask. We're here to help!
+Remove any of the following that do not apply. If you're unsure about
+any of these, don't hesitate to ask. We're here to help!
 
 - [ ] ✌️ The conflicts in this pull request have been resolved.
 - [ ] *All* future TODOs are captured in issues, which are referenced
@@ -74,8 +74,8 @@ that you must resolve before merging this pull request!
 
 ## ✅ Pre-merge checklist ##
 
-- Remove any of the following that do not apply.
-- These boxes should remain unchecked until the pull request has been approved.
+Remove any of the following that do not apply. These boxes should
+remain unchecked until the pull request has been approved.
 
 - [ ] Bump major, minor, patch, or pre-release version [as
       appropriate](https://semver.org/#semantic-versioning-specification-semver)
@@ -85,7 +85,7 @@ that you must resolve before merging this pull request!
 
 ## ✅ Post-merge checklist ##
 
-- Remove any of the following that do not apply.
+Remove any of the following that do not apply.
 
 - [ ] Create a release.
 
