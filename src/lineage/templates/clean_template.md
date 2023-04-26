@@ -41,8 +41,9 @@ Remove any of the following that do not apply.
 
 ---
 
-**Note:** *You are seeing this because one of this repository's maintainers has
-configured [Lineage] to open pull requests.*
+> **Note**
+> You are seeing this because one of this repository's maintainers has
+> configured [Lineage] to open pull requests.
 
 For more information:
 
