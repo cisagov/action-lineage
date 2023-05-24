@@ -82,6 +82,7 @@ remain unchecked until the pull request has been approved.
       via the `bump_version.sh` script *if* this repository is
       versioned *and* the changes in this PR [warrant a version
       bump](https://semver.org/#what-should-i-do-if-i-update-my-own-dependencies-without-changing-the-public-api).
+- [ ] Finalize version.
 
 ## ✅ Post-merge checklist ##
 
