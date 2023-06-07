@@ -26,7 +26,7 @@ that you must resolve before merging this pull request!
     git remote add {{ lineage_id }} {{ remote_url }}
     git remote set-url --push {{ lineage_id }} no_push
     git switch {{ local_branch }}
-    git switch -c {{ pr_branch_name }} --track origin/{{ local_branch }}
+    git switch --create {{ pr_branch_name }} --track origin/{{ local_branch }}
     git pull {{ lineage_id }} {{ remote_branch }}
     git status
     ```
