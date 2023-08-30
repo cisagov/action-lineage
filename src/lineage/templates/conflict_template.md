@@ -92,7 +92,7 @@ Remove any of the following that do not apply.
 
 ---
 
-> **Note**
+> [!NOTE]
 > You are seeing this because one of this repository's maintainers has
 > configured [Lineage] to open pull requests.
 
