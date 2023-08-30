@@ -37,6 +37,19 @@ lineage:
     remote-url: https://github.com/felddy/extra-skel-sauce.git
 ```
 
+### Configure a [cisagov] repository for automatic Lineage updates ###
+
+If you are a [cisagov] repository maintainer and wish for your repository to
+receive Lineage updates you must do the following:
+
+1. Ensure your project is based on a publicly accessible parent repository
+   (such as a [`cisagov` skeleton repository](https://github.com/cisagov/development-guide/blob/develop/project_setup/skeleton-list.md))
+1. Provide [`write`](https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/repository-roles-for-an-organization#repository-roles-for-organizations)
+   access to [@cisagovbot](https://github.com/cisagovbot) or [@cisagov/team-ois](https://github.com/orgs/cisagov/teams/team-ois)
+
+Once these changes are implemented your repository should see new pull requests
+generated as appropriate during the regular Lineage organization checks.
+
 ## Usage ##
 
 ### Inputs ###
@@ -102,3 +115,5 @@ dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 All contributions to this project will be released under the CC0
 dedication. By submitting a pull request, you are agreeing to comply
 with this waiver of copyright interest.
+
+[cisagov]: https://github.com/cisagov
