@@ -110,7 +110,7 @@ def get_config(repo: Repository.Repository) -> Optional[dict]:
     """Read the lineage configuration for this repo without checking it out."""
     config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CONFIG_FILENAME}"
     logging.debug("Checking for config at: %s", config_url)
-    response = requests.get(config_url)
+    response = requests.get(config_url, timeout=5)
     if response.status_code == 200:
         return yaml.safe_load(response.content)
     else:
@@ -253,7 +253,7 @@ def get_code_owners(repo: Repository.Repository) -> Generator[str, None, None]:
     """Get the code owners for this repo."""
     config_url: str = f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CODEOWNERS_FILENAME}"
     logging.debug("Checking for code owners at: %s", config_url)
-    response = requests.get(config_url)
+    response = requests.get(config_url, timeout=5)
     if response.status_code == 200:
         lines = response.content.decode().split("\n")
         for line in lines:
