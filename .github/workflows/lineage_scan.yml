@@ -1,7 +1,7 @@
 ---
 name: lineage_scan
 
-on:
+on:  # yamllint disable-line rule:truthy
   schedule:
     - cron: 15 * * * *
   workflow_dispatch:
