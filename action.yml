@@ -1,29 +1,29 @@
 ---
-author: "Cyber and Infrastructure Security Agency"
+author: Cyber and Infrastructure Security Agency
 branding:
-  icon: "clock"
-  color: "purple"
-description: "Creates pull requests for upstream changes in repositories."
-name: "Lineage"
+  icon: clock
+  color: purple
+description: Creates pull requests for upstream changes in repositories.
+name: Lineage
 
 inputs:
   access_token:
-    description: "GitHub personal access token."
+    description: GitHub personal access token.
     required: true
   mask_non_public_repos:
     default: "true"
-    description: "Whether to mask the names of non-public (`private` and
-      `internal`) repositories in the GitHub Actions logs."
+    description: Whether to mask the names of non-public (`private` and
+      `internal`) repositories in the GitHub Actions logs.
     required: false
   include_non_public_repos:
     default: "false"
-    description: "Whether to process non-public (`private` and `internal`)
-      repositories."
+    description: Whether to process non-public (`private` and `internal`)
+      repositories.
     required: false
   repo_query:
-    description: "GitHub search query to use when finding repositories for
-      which to create pull requests (e.g. \"org:cisagov archived:false\")."
+    description: GitHub search query to use when finding repositories for
+      which to create pull requests (e.g. "org:cisagov archived:false").
     required: true
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: docker
+  image: Dockerfile

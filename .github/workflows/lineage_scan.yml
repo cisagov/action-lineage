@@ -3,7 +3,7 @@ name: lineage_scan
 
 on:
   schedule:
-    - cron: "15 * * * *"
+    - cron: 15 * * * *
   workflow_dispatch:
 
 env:
@@ -55,4 +55,4 @@ jobs:
         uses: cisagov/action-lineage@develop
         with:
           access_token: ${{ env.ACCESS_TOKEN }}
-          repo_query: "org:cisagov archived:false"
+          repo_query: org:cisagov archived:false
