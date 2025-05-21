@@ -2,17 +2,14 @@
 
 <img align="left" alt="Achtung!!!" width="100" src="https://raw.githubusercontent.com/cisagov/action-lineage/develop/src/achtung.gif">
 
-[Lineage] has created this pull request to incorporate new changes found in an
-upstream repository:
+[Lineage] has created this pull request to incorporate new changes found in an upstream repository:  <!-- markdownlint-disable-line MD013 -->
 
 Upstream repository: [`{{ remote_url }}`]({{ remote_url }})
 {{#remote_branch}}Remote branch: `{{ remote_branch }}`{{/remote_branch}}
 
-Check the changes in this pull request to ensure they won't cause issues with
-your project.
+Check the changes in this pull request to ensure they won't cause issues with your project.  <!-- markdownlint-disable-line MD013 -->
 
-The `{{ pr_branch_name }}` branch has **one or more unresolved merge conflicts**
-that you must resolve before merging this pull request!
+The `{{ pr_branch_name }}` branch has **one or more unresolved merge conflicts** that you must resolve before merging this pull request!  <!-- markdownlint-disable-line MD013 -->
 
 ## How to resolve the conflicts ##
 
@@ -31,11 +28,9 @@ that you must resolve before merging this pull request!
     git status
     ```
 
-1. Review the changes displayed by the `status` command.  Fix any conflicts and
-   possibly incorrect auto-merges.
+1. Review the changes displayed by the `status` command.  Fix any conflicts and possibly incorrect auto-merges.  <!-- markdownlint-disable-line MD013 -->
 
-1. After resolving each of the conflicts, `add` your changes to the
-   branch, `commit`, and `push` your changes:
+1. After resolving each of the conflicts, `add` your changes to the branch, `commit`, and `push` your changes:  <!-- markdownlint-disable-line MD013 -->
 
     ```console
     git add {{#conflict_file_list}}{{.}} {{/conflict_file_list}}
@@ -43,10 +38,7 @@ that you must resolve before merging this pull request!
     git push --force --set-upstream origin {{ pr_branch_name }}
     ```
 
-    Note that you may *append* to the default merge commit message
-    that git creates for you, but *please do not delete the existing
-    content*.  It provides useful information about the merge that is
-    being performed.
+    Note that you may *append* to the default merge commit message that git creates for you, but *please do not delete the existing content*.  It provides useful information about the merge that is being performed.  <!-- markdownlint-disable-line MD013 -->
 
 1. Wait for all the automated tests to pass.
 
@@ -60,8 +52,7 @@ that you must resolve before merging this pull request!
 
 ## ✅ Pre-approval checklist ##
 
-Remove any of the following that do not apply. If you're unsure about
-any of these, don't hesitate to ask. We're here to help!
+Remove any of the following that do not apply. If you're unsure about any of these, don't hesitate to ask. We're here to help!  <!-- markdownlint-disable-line MD013 -->
 
 - [ ] ✌️ The conflicts in this pull request have been resolved.
 - [ ] *All* future TODOs are captured in issues, which are referenced in code comments.
@@ -74,8 +65,7 @@ any of these, don't hesitate to ask. We're here to help!
 
 ## ✅ Pre-merge checklist ##
 
-Remove any of the following that do not apply. These boxes should
-remain unchecked until the pull request has been approved.
+Remove any of the following that do not apply. These boxes should remain unchecked until the pull request has been approved.  <!-- markdownlint-disable-line MD013 -->
 
 - [ ] Finalize version.
 
@@ -88,8 +78,7 @@ Remove any of the following that do not apply.
 ---
 
 > [!NOTE]
-> You are seeing this because one of this repository's maintainers has
-> configured [Lineage] to open pull requests.
+> You are seeing this because one of this repository's maintainers has configured [Lineage] to open pull requests.  <!-- markdownlint-disable-line MD013 -->
 
 For more information:
 
