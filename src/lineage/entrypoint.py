@@ -2,6 +2,7 @@
 
 # Standard Python Libraries
 from enum import Enum, auto
+from importlib.resources import files
 import logging
 import os
 from pathlib import Path
@@ -14,7 +15,6 @@ from urllib.parse import ParseResult, urlparse
 from actions_toolkit import core
 import chevron
 from github import Github, PullRequest, Repository
-import pkg_resources
 import requests
 import yaml
 
@@ -90,8 +90,9 @@ def load_template(github_workspace_dir, default_filename, custom_filename=None):
     else:
         logging.info("Loading default template: %s", default_filename)
         template_data = (
-            pkg_resources.resource_string("lineage", f"templates/{default_filename}")
-            .decode("utf-8")
+            files(__package__)
+            .joinpath("templates", default_filename)
+            .read_text()
             .strip()
         )
     return template_data
