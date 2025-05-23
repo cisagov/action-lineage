@@ -90,8 +90,8 @@ def load_template(github_workspace_dir, default_filename, custom_filename=None):
     else:
         logging.info("Loading default template: %s", default_filename)
         template_data = (
-            files(f"{__package__}.templates")
-            .joinpath(default_filename)
+            files(__package__)
+            .joinpath(f"templates/{default_filename}")
             .read_text()
             .strip()
         )
