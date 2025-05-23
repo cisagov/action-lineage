@@ -10,9 +10,20 @@ import pytest
 import lineage
 import lineage.entrypoint
 
+TEMPLATE_PATH_BASE = "tests/templates/"
+
 # define sources of version strings
 PROJECT_VERSION = lineage.__version__
 RELEASE_TAG = os.getenv("RELEASE_TAG")
+
+
+@pytest.mark.parametrize("template_file", ["clean_template.md", "conflict_template.md"])
+def test_load_template(template_file):
+    """Test that a template can be successfully loaded."""
+    template = lineage.entrypoint.load_template(".", template_file)
+    with open(TEMPLATE_PATH_BASE + template_file) as test_file:
+        test_template = test_file.read().rstrip()
+    assert template == test_template, "template data does not match"
 
 
 def test_unset_ca_variables():
