@@ -1,18 +1,24 @@
+<!-- GitHub renders PRs such that soft line breaks are treated as hard
+line breaks.  In order to make this template render as expected we
+therefore have to avoid soft breaks and therefore will offend
+markdownlint with long lines.  This is the reason for the markdownlint
+disable directive just below.
+
+For more details see:
+https://github.com/github/markup/issues/1050#issuecomment-294654762 -->
+<!-- markdownlint-disable MD013 -->
 # Lineage Pull Request: CONFLICT #
 
 <img align="left" alt="Achtung!!!" width="100" src="https://raw.githubusercontent.com/cisagov/action-lineage/develop/src/achtung.gif">
 
-[Lineage] has created this pull request to incorporate new changes found in an
-upstream repository:
+[Lineage] has created this pull request to incorporate new changes found in an upstream repository:
 
 Upstream repository: [`{{ remote_url }}`]({{ remote_url }})
 {{#remote_branch}}Remote branch: `{{ remote_branch }}`{{/remote_branch}}
 
-Check the changes in this pull request to ensure they won't cause issues with
-your project.
+Check the changes in this pull request to ensure they won't cause issues with your project.
 
-The `{{ pr_branch_name }}` branch has **one or more unresolved merge conflicts**
-that you must resolve before merging this pull request!
+The `{{ pr_branch_name }}` branch has **one or more unresolved merge conflicts** that you must resolve before merging this pull request!
 
 ## How to resolve the conflicts ##
 
@@ -31,11 +37,9 @@ that you must resolve before merging this pull request!
     git status
     ```
 
-1. Review the changes displayed by the `status` command.  Fix any conflicts and
-   possibly incorrect auto-merges.
+1. Review the changes displayed by the `status` command.  Fix any conflicts and possibly incorrect auto-merges.
 
-1. After resolving each of the conflicts, `add` your changes to the
-   branch, `commit`, and `push` your changes:
+1. After resolving each of the conflicts, `add` your changes to the branch, `commit`, and `push` your changes:
 
     ```console
     git add {{#conflict_file_list}}{{.}} {{/conflict_file_list}}
@@ -43,10 +47,7 @@ that you must resolve before merging this pull request!
     git push --force --set-upstream origin {{ pr_branch_name }}
     ```
 
-    Note that you may *append* to the default merge commit message
-    that git creates for you, but *please do not delete the existing
-    content*.  It provides useful information about the merge that is
-    being performed.
+    Note that you may *append* to the default merge commit message that git creates for you, but *please do not delete the existing content*.  It provides useful information about the merge that is being performed.
 
 1. Wait for all the automated tests to pass.
 
@@ -60,41 +61,33 @@ that you must resolve before merging this pull request!
 
 ## ✅ Pre-approval checklist ##
 
-Remove any of the following that do not apply. If you're unsure about
-any of these, don't hesitate to ask. We're here to help!
+Remove any of the following that do not apply. If you're unsure about any of these, don't hesitate to ask. We're here to help!
 
 - [ ] ✌️ The conflicts in this pull request have been resolved.
-- [ ] *All* future TODOs are captured in issues, which are referenced
-      in code comments.
+- [ ] *All* future TODOs are captured in issues, which are referenced in code comments.
 - [ ] All relevant type-of-change labels have been added.
-- [ ] All relevant repo and/or project documentation has been updated
-      to reflect the changes in this PR.
+- [ ] All relevant repo and/or project documentation has been updated to reflect the changes in this PR.
 - [ ] Tests have been added and/or modified to cover the changes in this PR.
 - [ ] All new and existing tests pass.
+- [ ] Bump major, minor, patch, pre-release, and/or build versions [as appropriate](https://semver.org/#semantic-versioning-specification-semver) via the `bump_version` script *if* this repository is versioned *and* the changes in this PR [warrant a version bump](https://semver.org/#what-should-i-do-if-i-update-my-own-dependencies-without-changing-the-public-api).
+- [ ] Create a pre-release (necessary if and only if the pre-release version was bumped).
 
 ## ✅ Pre-merge checklist ##
 
-Remove any of the following that do not apply. These boxes should
-remain unchecked until the pull request has been approved.
+Remove any of the following that do not apply. These boxes should remain unchecked until the pull request has been approved.
 
-- [ ] Bump major, minor, patch, or pre-release version [as
-      appropriate](https://semver.org/#semantic-versioning-specification-semver)
-      via the `bump_version.sh` script *if* this repository is
-      versioned *and* the changes in this PR [warrant a version
-      bump](https://semver.org/#what-should-i-do-if-i-update-my-own-dependencies-without-changing-the-public-api).
 - [ ] Finalize version.
 
 ## ✅ Post-merge checklist ##
 
 Remove any of the following that do not apply.
 
-- [ ] Create a release.
+- [ ] Create a release (necessary if and only if the version was bumped).
 
 ---
 
 > [!NOTE]
-> You are seeing this because one of this repository's maintainers has
-> configured [Lineage] to open pull requests.
+> You are seeing this because one of this repository's maintainers has configured [Lineage] to open pull requests.
 
 For more information:
 
