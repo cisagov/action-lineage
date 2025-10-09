@@ -1,10 +1,8 @@
 # action-lineage #
 
 [![GitHub Build Status](https://github.com/cisagov/action-lineage/workflows/build/badge.svg)](https://github.com/cisagov/action-lineage/actions)
-[![Lineage Scan Status](https://github.com/cisagov/action-lineage/workflows/lineage_scan/badge.svg)](https://github.com/cisagov/action-lineage/actions?query=workflow%3Alineage_scan)
 [![CodeQL](https://github.com/cisagov/action-lineage/workflows/CodeQL/badge.svg)](https://github.com/cisagov/action-lineage/actions/workflows/codeql-analysis.yml)
 [![Coverage Status](https://coveralls.io/repos/github/cisagov/action-lineage/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/action-lineage?branch=develop)
-[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/action-lineage/develop/badge.svg)](https://snyk.io/test/github/cisagov/action-lineage)
 
 A GitHub Action to automatically generate PR requests from upstream repositories
 regardless of the fork network.
