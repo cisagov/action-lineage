@@ -3,7 +3,7 @@ name: lineage_scan
 
 on:  # yamllint disable-line rule:truthy
   schedule:
-    - cron: 15 * * * *
+    - cron: 15 0-4 * * *
   workflow_dispatch:
 
 # Set a default shell for any run steps. The `-Eueo pipefail` sets errtrace,
