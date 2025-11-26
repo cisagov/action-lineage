@@ -38,7 +38,7 @@ dependencies = [
     "PyGithub",
     "PyYAML",
 ]
-description = "GitHub Action to rebuild repositories that haven't been built in a while."
+description = "GitHub Action to automatically generate PR requests from upstream repositories regardless of the fork network"
 dynamic = ["readme", "version"]
 keywords = ["lineage", "upstream", "pull"]
 license = "CC0-1.0"
