@@ -1,6 +1,7 @@
 """GitHub Action to create pull requests for upstream changes."""
 
 # Standard Python Libraries
+from collections.abc import Generator
 from enum import Enum, auto
 from importlib.resources import files
 import logging
@@ -8,7 +9,6 @@ import os
 from pathlib import Path
 import subprocess  # nosec
 import sys
-from typing import Generator, List, Optional, Tuple
 from urllib.parse import ParseResult, urlparse
 
 # Third-Party Libraries
@@ -47,9 +47,9 @@ def clear_ca_variables_in_gha() -> None:
 
 
 def run(
-    cmd: List[str],
-    cwd: Optional[str] = None,
-    comment: Optional[str] = None,
+    cmd: list[str],
+    cwd: str | None = None,
+    comment: str | None = None,
     on_error: OnError = OnError.FAIL,
 ) -> subprocess.CompletedProcess:
     """Run a command and display its output and return code."""
@@ -117,7 +117,7 @@ def get_repo_list(
     yield from matching_repos
 
 
-def get_config(repo: Repository.Repository) -> Optional[dict]:
+def get_config(repo: Repository.Repository) -> dict | None:
     """Read the lineage configuration for this repo without checking it out."""
     config_url: str = (
         f"https://raw.githubusercontent.com/{repo.full_name}/{repo.default_branch}/{CONFIG_FILENAME}"
@@ -132,7 +132,7 @@ def get_config(repo: Repository.Repository) -> Optional[dict]:
 
 def switch_branch(
     repo: Repository.Repository, lineage_id: str, local_branch: str
-) -> Tuple[str, bool]:
+) -> tuple[str, bool]:
     """Switch to the PR branch, and possibly create it."""
     branch_name = f"lineage/{lineage_id}"
     logging.info("Attempting to switch to branch: %s", branch_name)
@@ -154,7 +154,7 @@ def switch_branch(
         return branch_name, False  # branch existed
 
 
-def fetch(repo: Repository.Repository, remote_url: str, remote_branch: Optional[str]):
+def fetch(repo: Repository.Repository, remote_url: str, remote_branch: str | None):
     """Fetch commits from remote branch."""
     if remote_branch:
         logging.info("Fetching %s %s", remote_url, remote_branch)
@@ -164,9 +164,9 @@ def fetch(repo: Repository.Repository, remote_url: str, remote_branch: Optional[
         run([GIT, "fetch", remote_url], cwd=repo.full_name)
 
 
-def merge(repo: Repository.Repository, github_actor: str) -> Tuple[bool, List[str]]:
+def merge(repo: Repository.Repository, github_actor: str) -> tuple[bool, list[str]]:
     """Merge previously fetched commits."""
-    conflict_file_list: List[str] = []
+    conflict_file_list: list[str] = []
     logging.debug("Setting git user.name %s", github_actor)
     proc = run([GIT, "config", "user.name", github_actor], cwd=repo.full_name)
     logging.debug("Setting git user.email %s@github.com", github_actor)
@@ -308,11 +308,11 @@ def main() -> None:
     )
 
     # Get inputs from the environment
-    access_token: Optional[str] = core.get_input("access_token")
-    github_actor: Optional[str] = os.environ.get("GITHUB_ACTOR")
-    github_workspace_dir: Optional[str] = os.environ.get("GITHUB_WORKSPACE")
+    access_token: str | None = core.get_input("access_token")
+    github_actor: str | None = os.environ.get("GITHUB_ACTOR")
+    github_workspace_dir: str | None = os.environ.get("GITHUB_WORKSPACE")
     mask_non_public: bool = core.get_boolean_input("mask_non_public_repos")
-    repo_query: Optional[str] = core.get_input("repo_query")
+    repo_query: str | None = core.get_input("repo_query")
     include_non_public: bool = core.get_boolean_input("include_non_public_repos")
 
     # sanity checks
@@ -405,7 +405,7 @@ def main() -> None:
             continue
         lineage_id: str
         local_branch: str
-        remote_branch: Optional[str]
+        remote_branch: str | None
         remote_url: str
         if config.get("version") != "1":
             base_message = "Incompatible config version: %s"
@@ -451,7 +451,7 @@ def main() -> None:
                 )
             fetch(repo, remote_url, remote_branch)
             changed: bool
-            conflict_file_list: List[str]
+            conflict_file_list: list[str]
             changed, conflict_file_list = merge(repo, github_actor)
             if not changed:
                 logging.info(
