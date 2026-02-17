@@ -3,7 +3,13 @@ name: lineage_scan
 
 on:  # yamllint disable-line rule:truthy
   schedule:
-    - cron: 15 0-4 * * *
+    # Run hourly from about 7PM until 4AM Eastern time, Sunday evening
+    # through Monday morning, Monday evening through Tuesday morning,
+    # ..., Thursday evening through Friday morning.
+    - cron: 15 0-9 * * 1-5
+    # Run hourly from about 7PM Eastern time, Friday evening through
+    # Sunday evening.
+    - cron: 15 * * * 0,6
   workflow_dispatch:
 
 # Set a default shell for any run steps. The `-Eueo pipefail` sets errtrace,
