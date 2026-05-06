@@ -16,9 +16,9 @@ Lineage is configured using `.github/lineage.yml` in a repository.  Each
 upstream repository is listed in the `lineage` section.
 
 | Key | Description | Required |
-|-----|-------------|:--------:|
+| --- | ----------- | :------: |
 | local-branch | The branch that will receive new changes. | No |
-| remote-url   | The `https` URL of the upstream repository. | Yes |
+| remote-url | The `https` URL of the upstream repository. | Yes |
 | remote-branch | The branch in the upstream repository. | No |
 
 Below is an example configuration that defines two upstream repositories. The
@@ -43,7 +43,7 @@ lineage:
 ### Inputs ###
 
 | Name | Description | Interpreted Type | Default | Required |
-|------|-------------|------------------|---------|:--------:|
+| ---- | ----------- | ---------------- | ------- | :------: |
 | access_token | GitHub personal access token (see [GitHub's documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)). | `string` | n/a | yes |
 | mask_non_public_repos | Whether to mask the names of non-public (`private` and `internal`) repositories in the GitHub Actions logs. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `true` | no |
 | include_non_public_repos | Whether to process non-public (`private` and `internal`) repositories. | [`boolean`](https://yaml.org/spec/1.2.2/#1032-tag-resolution) | `false` | no |

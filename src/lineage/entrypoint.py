@@ -487,11 +487,13 @@ def main() -> None:
                         )
                 else:
                     logging.warning(
-                        "Not creating a new pull request because the branch already exists."
+                        "Not creating a new pull request because the branch "
+                        "already exists."
                     )
             else:
                 logging.warning(
-                    "Not creating a new pull request because of insufficient permissions."
+                    "Not creating a new pull request because of insufficient "
+                    "permissions."
                 )
         core.end_group()
 
