@@ -2,14 +2,20 @@
 name: lineage_scan
 
 on:  # yamllint disable-line rule:truthy
+  # Together these cron schedules ensure that the workflow runs hourly
+  # 7:15 PM to 4:15 AM on weekdays and hourly all day long on the
+  # weekends.
   schedule:
-    # Run hourly from about 7PM until 4AM Eastern time, Sunday evening
-    # through Monday morning, Monday evening through Tuesday morning,
-    # ..., Thursday evening through Friday morning.
-    - cron: 15 0-9 * * 1-5
-    # Run hourly from about 7PM Eastern time, Friday evening through
-    # Sunday evening.
-    - cron: 15 * * * 0,6
+    # Run hourly from 7:15 PM until 11:15 PM Eastern time on Monday
+    # through Friday evening.
+    - cron: 15 19-23 * * 1-5
+      timezone: America/New_York
+    # Run hourly from 12:15 AM to 4:15 AM Monday through Friday.
+    - cron: 15 0-4 * * 1-5
+      timezone: America/New_York
+    # Run hourly Saturday and Sunday, all day long.
+    - cron: 15 * * * 6,0
+      timezone: America/New_York
   workflow_dispatch:
 
 # Set a default shell for any run steps. The `-Eueo pipefail` sets errtrace,
